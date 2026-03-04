@@ -1,9 +1,12 @@
 pragma Singleton
 import QtQuick
 import Quickshell
-import Quickshell.Io
 import qs.modules.functions
 import qs.config
+
+/*
+    This registry is only used to get app details for wm classes.
+*/
 
 Singleton {
     id: registry
@@ -139,41 +142,27 @@ Singleton {
             desktopIdToIcon["code.desktop"] = icon
             desktopIdToIcon["code-oss.desktop"] = icon
         }
-
     }
 
-    Process {
-        id: loader
-        running: true
-        command: ["bash", "-c", Directories.scriptsPath + "/finders/find-apps.sh"]
+    function buildRegistry() {
+        const entries = DesktopEntries.applications.values
 
-        stdout: SplitParser {
-            onRead: (data) => {
-                const lines = data.split("\n")
+        for (let entry of entries) {
+            if (entry.noDisplay)
+                continue
 
-                for (let line of lines) {
-                    line = line.trim()
-                    if (!line) continue
-
-                    const parts = line.split("|")
-
-                    // Format:
-                    // name | comment | icon | exec | wmclass | desktopId
-
-                    if (parts.length >= 4) {
-                        registry.registerApp(
-                            parts[0].trim(),
-                            parts[1].trim(),
-                            parts[2].trim(),
-                            parts[3].trim(),
-                            parts.length >= 5 ? parts[4].trim() : "",
-                            parts.length >= 6 ? parts[5].trim() : ""
-                        )
-                    }
-                }
-
-                registry.ready()
-            }
+            registry.registerApp(
+                entry.name || "",
+                entry.comment || "",
+                entry.icon || "",
+                entry.execString || "",
+                entry.startupWMClass || "",
+                entry.id || ""
+            )
         }
+
+        registry.ready()
     }
+
+    Component.onCompleted: buildRegistry()
 }
