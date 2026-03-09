@@ -1,17 +1,48 @@
 # Todo
 
-- [x] Redesign config layout and widget system for improved modularity and discoverability
-- [x] Add more curated optional modules and theme variants 
+- [x] Redesign config layout and widget system for improved modularity and discoverability. (Worked on till: `v0.7.3`)
 - [x] Improve installer prompts and backup behavior
-- [x] Add inbuilt-ai
-- [ ] Add support for customizable bar per monitor
+- [x] Add support for customizable bar per monitor
 - [x] Improve performance
 - [x] Add a screenshot utility to the shell.
 - [ ] Improve Intelligence chat interface.
 - [ ] Add greetd.
 - [x] Add polkit agent.
-- [x] Improve/Redesign bar.
-- [ ] Improve support for multiple displays... (There is decent support for that but needs optimization)
+- [ ] Improve bar layout and design.
+- [x] Improve support for multiple displays... (There is decent support for that but needs optimization)
 - [ ] Implement material ui.
 - [ ] Add `First Time` setup
-
+- [x] Customizable components (Decent Support)
+- [x] Themes
+- [x] System integration
+- [x] App launcher
+- [ ] Clipboard manager
+- [ ] Quick notes (and not so quick ones)
+- [x] Wallpaper manager
+- [ ] Emoji picker
+- [ ] [tmux](https://github.com/tmux/tmux) session manager
+- [ ] System monitor
+- [x] Media control
+- [x] Notification system
+- [x] Wi-Fi manager (Is in settings but not in the sidebar or so..)
+- [x] Bluetooth manager (Same with the wifi thing)
+- [ ] Audio mixer
+- [ ] [EasyEffects](https://github.com/wwmm/easyeffects) integration
+- [x] Screen capture
+- [ ] Screen recording
+- [ ] Color picker
+- [ ] OCR
+- [ ] QR and barcode scanner
+- [ ] "Mirror" (webcam)
+- [ ] Game mode
+- [x] Night mode
+- [ ] Power profile manager
+- [x] AI Assistant (Getting worked on)
+- [ ] Weather
+- [ ] Calendar
+- [x] Power menu
+- [ ] Workspace management (The floating one like end4)
+- [ ] Support for different layouts (dwindle, master, scrolling, etc.)
+- [ ] Customizable keybindings
+- [x] Plugin and extension system
+- [x] Compatibility with other Wayland compositors (Currently with: Niri, Hyprland)
