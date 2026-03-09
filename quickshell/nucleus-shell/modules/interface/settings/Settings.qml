@@ -85,30 +85,34 @@ Scope {
 
                 Rectangle {
                     id: sidebarBG
+
                     anchors.left: parent.left
                     anchors.top: parent.top
                     anchors.bottom: parent.bottom
 
-                    width: root.sidebarCollapsed ? 80 : 350
+                    width: root.sidebarCollapsed ? 80 : 340
+
                     color: Appearance.m3colors.m3surfaceContainerLow
 
                     ColumnLayout {
                         anchors.fill: parent
-                        anchors.margins: Metrics.margin(40)
-                        spacing: Metrics.spacing(5)
+                        anchors.margins: 24
+                        spacing: 8
 
                         RowLayout {
                             Layout.fillWidth: true
+                            Layout.preferredHeight: 48
 
                             StyledText {
+                                visible: !root.sidebarCollapsed
                                 Layout.fillWidth: true
                                 text: "Settings"
                                 font.family: "Outfit ExtraBold"
-                                font.pixelSize: Metrics.fontSize(28)
-                                visible: !root.sidebarCollapsed
+                                font.pixelSize: 26
                             }
 
                             StyledButton {
+                                Layout.preferredWidth: 40
                                 Layout.preferredHeight: 40
 
                                 icon: root.sidebarCollapsed
@@ -128,67 +132,81 @@ Scope {
                             Layout.fillHeight: true
 
                             model: menuModel
-                            spacing: Metrics.spacing(5)
+                            spacing: 6
                             clip: true
 
                             delegate: Item {
+
                                 width: sidebarList.width
                                 height: model.header
-                                        ? (root.sidebarCollapsed ? 0 : 30)
-                                        : 42
+                                        ? (root.sidebarCollapsed ? 0 : 28)
+                                        : 48
 
                                 visible: !model.header || !root.sidebarCollapsed
 
-                                Item {
-                                    width: parent.width
-                                    height: parent.height
-
-                                    StyledText {
-                                        y: (parent.height - height) * 0.5
-                                        x: 10
-                                        text: model.label
-                                        font.pixelSize: Metrics.fontSize(14)
-                                        font.bold: true
-                                        opacity: model.header ? 1 : 0
-                                    }
+                                StyledText {
+                                    visible: model.header && !root.sidebarCollapsed
+                                    anchors.left: parent.left
+                                    anchors.verticalCenter: parent.verticalCenter
+                                    text: model.label
+                                    font.bold: true
+                                    font.pixelSize: 13
                                 }
 
                                 Rectangle {
+
                                     anchors.fill: parent
                                     visible: !model.header
-
-                                    radius: Appearance.rounding.large
+                                    radius: 24
 
                                     color: root.selectedIndex === model.page
-                                           ? Appearance.m3colors.m3primary
+                                           ? Appearance.m3colors.m3secondaryContainer
                                            : "transparent"
 
                                     RowLayout {
-                                        anchors.verticalCenter: parent.verticalCenter
-                                        anchors.left: parent.left
-                                        anchors.leftMargin: 10
 
-                                        spacing: 10
+                                        anchors.fill: parent
+                                        anchors.leftMargin: 12
+                                        anchors.rightMargin: 12
+                                        spacing: 16
 
-                                        MaterialSymbol {
-                                            visible: !model.header
-                                            icon: model.icon ? model.icon : ""
-                                            iconSize: Metrics.iconSize(24)
+                                        Item {
+                                            width: 48
+                                            height: 48
+
+                                            visible: !root.sidebarCollapsed
+
+                                            MaterialSymbol {
+                                                anchors.centerIn: parent
+                                                icon: model.icon
+                                                iconSize: 24
+                                            }
                                         }
 
                                         StyledText {
-                                            text: model.label
                                             visible: !root.sidebarCollapsed
+                                            Layout.fillWidth: true
+                                            text: model.label
+                                            font.pixelSize: 14
+                                            verticalAlignment: Text.AlignVCenter
+                                        }
+                                    }
+
+                                    Item {
+                                        visible: root.sidebarCollapsed
+                                        anchors.fill: parent
+
+                                        MaterialSymbol {
+                                            anchors.centerIn: parent
+                                            icon: model.icon
+                                            iconSize: 24
                                         }
                                     }
                                 }
 
                                 TapHandler {
                                     enabled: model.page !== undefined
-
-                                    onTapped: {
-                                        root.selectedIndex = model.page
-                                    }
+                                    onTapped: root.selectedIndex = model.page
                                 }
                             }
                         }
