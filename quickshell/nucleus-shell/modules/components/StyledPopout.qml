@@ -193,7 +193,7 @@ LazyLoader {
                                 centeredX = 10;
                             xValue = centeredX;
                         } else {
-                            let xPos = baseX - ((ConfigResolver.bar(root.displayName).position === "top" || ConfigResolver.bar(root.displayName).position === "top") ? 20 : -40);
+                            let xPos = baseX - ((ConfigResolver.bar(root.displayName).position === "top" || ConfigResolver.bar(root.displayName).position === "bottom") ? 20 : -40);
                             if (xPos + popupWidth > screen.width) {
                                 exceedingHalf = true;
                                 xValue = baseX - popupWidth;
@@ -225,7 +225,10 @@ LazyLoader {
                         let targetHeight = targetItem.height;
                         let popupHeight = container.implicitHeight;
 
-                        let yPos = baseY + ((ConfigResolver.bar(root.displayName).position === "top" || ConfigResolver.bar(root.displayName).position === "top") ? targetHeight : 0);
+                        const barPos = ConfigResolver.bar(root.displayName).position;
+                        let yPos = barPos === "top" ? baseY + targetHeight :
+                                   barPos === "bottom" ? baseY - popupHeight :
+                                   baseY;
 
                         if (yPos > screen.height / 2)
                             yPos = baseY - popupHeight;
