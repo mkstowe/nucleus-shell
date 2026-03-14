@@ -163,8 +163,7 @@ Contributions are welcome. When contributing:
 - Submit focused PRs with clear descriptions and tests where applicable.
 - Follow code structure and naming conventions used in `dots/`.
 
-- See `license/CONTRIBUTING.md` for full contribution guidelines.
-- If you are a collaborator make sure to read `license/COLLABORATORS.md`
+- See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for full contribution guidelines.
 
 ---
 
@@ -194,14 +193,22 @@ Contributions are welcome. When contributing:
 
 <h2 align="center">✦ Thank You ✦</h2>
 
-* [@ivan](https://github.com/SavingFrame): Thanks bro for being our first "actual" contributor. 8)
-* [@Tanujairamv](https://github.com/Tanujairamv): For being a great friend and supporting the community all along. <3
-* [@Saturno](https://github.com/Saturno-0): For being a great friend and community member. ;)
-* [@end4](https://github.com/end4): For his great projects
-* [@soramanew](https://github.com/soramanew): We haven't talked but I was greatly inspired by his project **caelestia-shell**
-* [@Axenide](https://github.com/axenide): I also haven't talked to him but his project **Ax-Shell** led me into hyprland shells for the first time.
+* [@ivan](https://github.com/SavingFrame): Thanks bro for being our first contributor. :P
+* [@Tanujairamv](https://github.com/Tanujairamv): For being a great friend and contributing to the project and the community. <3
+* [@Saturno](https://github.com/Saturno-0): For being a great friend and contributing to the project and the community. ;)
+* [@end4](https://github.com/end4): For his great projects like ii-qs.
+* [@soramanew](https://github.com/soramanew): We haven't talked but I was greatly inspired by his project **caelestia-shell**.
+* [@Axenide](https://github.com/axenide): I also haven't talked to him but his project **Ax-Shell** got me into hyprland shells.
 
 ---
+
+<h2 align="center">✦ Collaborators ✦</h2>
+
+* [@Tanujairamv](https://github.com/Tanujairmv)
+* [@Saturno](https://github.com/Saturno-0)
+
+---
+
 <h2 align="center">✦ Fella Contributors ✦</h2>
 
 <div align="center">
@@ -212,8 +219,9 @@ Contributions are welcome. When contributing:
 
 <h2 align="center">✦ License ✦</h2>
 
-© 2025 xZepyx (Aditya Yadav) — Licensed under the MIT License. See `license/` for details.
+© 2025 xZepyx — Licensed under the MIT License. See `license/` for details.
 I would appreciate if you put a notice that some stuff was taken from this repo if you distribute it.
 
 ---
+
 
