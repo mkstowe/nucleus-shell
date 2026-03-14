@@ -22,27 +22,25 @@ Singleton {
     }
     property list<Notif> history: data
 
-    Loader {
-        active: Config.initialized && Config.runtime.notifications.enabled
-        sourceComponent: NotificationServer {
-            keepOnReload: false
-            actionsSupported: true
-            bodyHyperlinksSupported: true
-            bodyImagesSupported: true
-            bodyMarkupSupported: true
-            imageSupported: true
+    NotificationServer {
+        keepOnReload: false
+        actionsSupported: true
+        bodyHyperlinksSupported: true
+        bodyImagesSupported: true
+        bodyMarkupSupported: true
+        imageSupported: true
 
-            onNotification: notif => {
-                notif.tracked = true;
+        onNotification: notif => {
+            notif.tracked = true;
 
-                root.data.push(notifComp.createObject(root, {
-                    popup: true,
-                    notification: notif,
-                    shown: false
-                }));
-            }
+            root.data.push(notifComp.createObject(root, {
+                popup: true,
+                notification: notif,
+                shown: false
+            }));
         }
     }
+    
     function removeById(id) {
         const i = data.findIndex(n => n.notification.id === id);
         if (i >= 0) {
