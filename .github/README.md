@@ -163,7 +163,7 @@ Contributions are welcome. When contributing:
 - Submit focused PRs with clear descriptions and tests where applicable.
 - Follow code structure and naming conventions used in `dots/`.
 
-- See [CONTRIBUTING.md](.github/CONTRIBUTING.md) for full contribution guidelines.
+- See [CONTRIBUTING.md](CONTRIBUTING.md) for full contribution guidelines.
 
 ---
 
