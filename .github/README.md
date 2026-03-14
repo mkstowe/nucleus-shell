@@ -29,6 +29,10 @@ Key goals:
   If you encounter a problem in the current release, please first test against the latest source code by cloning the repository (`git clone ...`). This ensures you are not reporting an issue that has already been fixed.
   Only open an issue if the problem is still reproducible on the latest source.
 
+> [!CAUTION]
+> * You will find a lot of design and ui inconsistencies with the latest git clone because it is under development. Prefer using the latest release rather than the latest clone.
+
+
 ---
 
 <h2 align="center">✦ Previews ✦</h2>
