@@ -16,14 +16,12 @@ PanelWindow {
     id: sidebarRight
     WlrLayershell.namespace: "nucleus:sidebarRight"
     WlrLayershell.layer: WlrLayer.Top
-    visible: Config.initialized && Globals.visiblility.sidebarRight && !Globals.visiblility.sidebarLeft
+    visible: Config.initialized && Globals.visiblility.sidebarRight
     color: "transparent"
     exclusiveZone: 0
     WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarRight
     
     property real sidebarRightWidth: 500
-
-    implicitWidth: sidebarRightWidth
 
     HyprlandFocusGrab {
         id: grab
