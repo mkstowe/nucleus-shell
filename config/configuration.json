@@ -103,8 +103,6 @@
         "volumeOverlayEnabled": true,
         "volumeOverlayPosition": "top"
     },
-    "plugins": {
-    },
     "shell": {
         "qsVersion": "0.0.0",
         "releaseChannel": "stable",

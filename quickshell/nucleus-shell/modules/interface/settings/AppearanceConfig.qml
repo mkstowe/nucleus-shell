@@ -6,7 +6,6 @@ import Quickshell.Widgets
 import qs.config
 import qs.modules.components
 import qs.services
-import qs.plugins
 
 ContentMenu {
     title: "Appearance"

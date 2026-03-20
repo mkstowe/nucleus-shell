@@ -30,7 +30,6 @@ Singleton {
     Component.onCompleted: {
         Quickshell.execDetached(["mkdir", "-p", `${shellConfig}`])
         Quickshell.execDetached(["mkdir", "-p", `${shellConfig}/config`])
-        Quickshell.execDetached(["mkdir", "-p", `${shellConfig}/plugins`])
         Quickshell.execDetached(["mkdir", "-p", `${FileUtils.trimFileProtocol(Directories.pictures)}/Screenshots`])
         // Create dirs for intelligence shit
         Quickshell.execDetached(["mkdir", "-p", FileUtils.trimFileProtocol(`${config}/zenith/`), FileUtils.trimFileProtocol(`${config}/zenith/chats`)])

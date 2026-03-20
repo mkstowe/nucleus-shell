@@ -44,5 +44,4 @@
 - [ ] Workspace management (The floating one like end4)
 - [ ] Support for different layouts (dwindle, master, scrolling, etc.)
 - [ ] Customizable keybindings
-- [x] Plugin and extension system
 - [x] Compatibility with other Wayland compositors (Currently with: Hyprland)
