@@ -130,50 +130,6 @@ ContentMenu {
             prefField: "overlays.volumeOverlayEnabled"
         }
 
-        StyledSwitchOption {
-            title: "Brightness OSD enabled"
-            description: "Enable or disable brightness osd."
-            prefField: "overlays.brightnessOverlayEnabled"
-        }
-
-        RowLayout {
-
-            ColumnLayout {
-                StyledText {
-                    text: "Brightness OSD Position"
-                    font.pixelSize: Metrics.fontSize(16)
-                }
-
-                StyledText {
-                    text: "Choose where brightness OSD is shown."
-                    font.pixelSize: Metrics.fontSize(12)
-                }
-            }
-
-            Item { Layout.fillWidth: true }
-
-            StyledDropDown {
-
-                property var positions:
-                    ["Top Left","Top Right","Bottom Left","Bottom Right","Top","Bottom"]
-
-                model: positions
-
-                currentIndex:
-                    indexFromPosition(
-                        Config.runtime.overlays.brightnessOverlayPosition,
-                        positions
-                    )
-
-                onSelectedIndexChanged: function(index) {
-                    Config.updateKey(
-                        "overlays.brightnessOverlayPosition",
-                        positions[index].toLowerCase().replace(" ", "-")
-                    )
-                }
-            }
-        }
-
         RowLayout {
 
             ColumnLayout {

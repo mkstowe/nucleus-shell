@@ -103,7 +103,7 @@ packages=(
     firefox nautilus network-manager-applet
     wl-color-picker imagemagick qt6-svg
     networkmanager wireplumber bluez-utils
-    fastfetch playerctl brightnessctl
+    fastfetch playerctl
     papirus-icon-theme-git hyprsunset
     nerd-fonts ttf-jetbrains-mono
     ttf-fira-code ttf-firacode-nerd

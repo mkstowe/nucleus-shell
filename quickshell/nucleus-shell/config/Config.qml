@@ -228,9 +228,7 @@ Singleton {
             property JsonObject overlays: JsonObject {
                 property bool enabled: true 
                 property bool volumeOverlayEnabled: true 
-                property bool brightnessOverlayEnabled: true
                 property string volumeOverlayPosition: "top"
-                property string brightnessOverlayPosition: "top"
             }
             property JsonObject launcher: JsonObject {
                 property bool fuzzySearchEnabled: true

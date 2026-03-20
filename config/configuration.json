@@ -99,8 +99,6 @@
         "position": "top-right"
     },
     "overlays": {
-        "brightnessOverlayEnabled": true,
-        "brightnessOverlayPosition": "top",
         "enabled": true,
         "volumeOverlayEnabled": true,
         "volumeOverlayPosition": "top"
