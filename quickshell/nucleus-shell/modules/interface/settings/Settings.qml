@@ -58,10 +58,7 @@ Scope {
                 { "icon": "wallpaper", "label": "Wallpapers", "page": 5 },
                 { "icon": "apps", "label": "Launcher", "page": 6 },
                 { "icon": "notifications", "label": "Notifications", "page": 7 },
-                { "icon": "build", "label": "Miscellaneous", "page": 8 },
-
-                { "header": true, "label": "About" },
-                { "icon": "info", "label": "About", "page": 9 }
+                { "icon": "build", "label": "Miscellaneous", "page": 8 }
             ]
 
             Item {
@@ -205,7 +202,6 @@ Scope {
                     LauncherConfig     { Layout.fillWidth: true; Layout.fillHeight: true }
                     NotificationConfig { Layout.fillWidth: true; Layout.fillHeight: true }
                     MiscConfig         { Layout.fillWidth: true; Layout.fillHeight: true }
-                    About              { Layout.fillWidth: true; Layout.fillHeight: true }
                 }
             }
         }

@@ -13,48 +13,6 @@ ContentMenu {
 
     ContentCard {
         StyledText {
-            text: "Versions"
-            font.pixelSize: Metrics.fontSize(20)
-            font.bold: true
-        }
-
-        RowLayout {
-            id: releaseChannelSelector
-
-            property string title: "Release Channel"
-            property string description: "Choose the release channel for updates."
-            property string prefField: ''
-
-            ColumnLayout {
-                StyledText {
-                    text: releaseChannelSelector.title
-                    font.pixelSize: Metrics.fontSize(16)
-                }
-
-                StyledText {
-                    text: releaseChannelSelector.description
-                    font.pixelSize: Metrics.fontSize(12)
-                }
-            }
-
-            Item {
-                Layout.fillWidth: true
-            }
-
-            StyledDropDown {
-                label: "Type"
-                model: ["Stable", "Edge (indev)"]
-                currentIndex: Config.runtime.shell.releaseChannel === "edge" ? 1 : 0
-                onSelectedIndexChanged: (index) => {
-                    Config.updateKey("shell.releaseChannel", index === 1 ? "edge" : "stable");
-                    UpdateNotifier.notified = false;
-                }
-            }
-        }
-    }
-
-    ContentCard {
-        StyledText {
             text: "Sidebar Layout"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
