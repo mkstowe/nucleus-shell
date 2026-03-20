@@ -209,10 +209,6 @@ Item {
                     Layout.preferredHeight: 80
                     Layout.fillWidth: true
                 }
-                NightModeToggle {
-                    Layout.preferredHeight: 80
-                    Layout.fillWidth: true
-                }
             }
         }
 
