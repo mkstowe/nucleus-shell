@@ -198,10 +198,6 @@ Item {
                     Layout.fillWidth: true
                     Layout.preferredHeight: 80
                 }
-                FlightModeToggle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 80
-                }
             }
 
             RowLayout {
