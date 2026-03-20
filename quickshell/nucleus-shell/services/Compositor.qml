@@ -11,12 +11,17 @@ Singleton {
     // compositor stuff
     property string detectedCompositor: ""
     
-    readonly property var backend: {
-        if (detectedCompositor === "niri")
-            return Niri
-        if (detectedCompositor === "hyprland")
-            return Hyprland
-        return null
+    readonly property var backend: detectedCompositor === "hyprland" ? Hyprland : null
+
+    function detectCompositor() {
+        if (Quickshell.env("HYPRLAND_INSTANCE_SIGNATURE")) {
+            detectedCompositor = "hyprland"
+            return
+        }
+
+        const sessionInfo = `${Quickshell.env("XDG_CURRENT_DESKTOP")} ${Quickshell.env("XDG_SESSION_DESKTOP")}`.trim().toLowerCase()
+        if (sessionInfo.includes("hyprland"))
+            detectedCompositor = "hyprland"
     }
 
     function require(compositors) { // This function can be effectively used to detect check requirements for a feature (also supports multiple compositors)
@@ -57,25 +62,7 @@ Singleton {
     }
 
     // process to detect compositor
-    Process {
-        command: ["sh", "-c", "echo \"$XDG_CURRENT_DESKTOP $XDG_SESSION_DESKTOP\""]
-        running: true
-
-        stdout: SplitParser {
-            onRead: data => {
-                if (!data)
-                    return
-
-                const val = data.trim().toLowerCase()
-
-                if (val.includes("hyprland")) {
-                    root.detectedCompositor = "hyprland"
-                } else if (val.includes("niri")) {
-                    root.detectedCompositor = "niri"
-                }
-            }
-        }
-    }
+    Component.onCompleted: detectCompositor()
 
     signal stateChanged()
 

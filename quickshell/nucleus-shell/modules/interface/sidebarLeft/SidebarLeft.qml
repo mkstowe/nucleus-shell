@@ -33,7 +33,7 @@ PanelWindow {
     visible: Config.initialized
     color: "transparent"
     exclusiveZone: 0
-    WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarLeft
+    WlrLayershell.keyboardFocus: Globals.visiblility.sidebarLeft
 
     HyprlandFocusGrab {
         id: grab

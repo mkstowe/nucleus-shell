@@ -72,7 +72,7 @@ Singleton {
         return iconForDesktopIcon(resolved)
     }
 
-    // Extra helper: resolve icon using any metadata we might have (Hyprland, Niri, etc.)
+    // Extra helper: resolve icon using any metadata we might have from the compositor.
     function iconForAppMeta(meta) {
         if (!meta) return Quickshell.iconPath("application-x-executable")
 

@@ -20,7 +20,6 @@ Item {
         MediaPlayerModule {}
         ActiveWindowModule {}
         ClockModule {}
-        BatteryIndicatorModule {}
     }
 
     RowLayout {
@@ -160,8 +159,6 @@ Item {
             }
 
             StatusIconsModule {}
-            BatteryIndicatorModule {}
-
             ToggleModule {
                 icon: "power_settings_new"
                 iconSize: Metrics.iconSize(22)

@@ -362,63 +362,6 @@ Item {
 
         Rectangle {
             Layout.fillWidth: true
-            implicitHeight: 72
-            radius: Metrics.radius("normal")
-            color: Appearance.colors.colLayer2
-            visible: UPower.batteryPresent
-
-            RowLayout {
-                anchors.fill: parent
-                anchors.margins: Metrics.margin("small")
-                spacing: Metrics.margin("large")
-
-                ColumnLayout {
-                    spacing: Metrics.spacing(2)
-
-                    StyledText {
-                        text: "Battery"
-                        font.pixelSize: Metrics.fontSize("small")
-                        color: Appearance.colors.colSubtext
-                    }
-
-                    StyledText {
-                        text: `${Math.round(UPower.percentage)}%`
-                        font.pixelSize: Metrics.fontSize("small")
-                        color: Appearance.m3colors.m3onSurface
-                    }
-
-                }
-
-                Item {
-                    Layout.fillWidth: true
-                }
-
-                ColumnLayout {
-                    spacing: Metrics.spacing(2)
-                    Layout.alignment: Qt.AlignRight
-
-                    StyledText {
-                        text: "AC"
-                        font.pixelSize: Metrics.fontSize("small")
-                        color: Appearance.colors.colSubtext
-                        horizontalAlignment: Text.AlignRight
-                    }
-
-                    StyledText {
-                        text: UPower.acOnline ? "online" : "battery"
-                        font.pixelSize: Metrics.fontSize("small")
-                        color: Appearance.m3colors.m3onSurface
-                        horizontalAlignment: Text.AlignRight
-                    }
-
-                }
-
-            }
-
-        }
-
-        Rectangle {
-            Layout.fillWidth: true
             implicitHeight: 56
             radius: Metrics.radius("normal")
             color: Appearance.colors.colLayer2

@@ -16,7 +16,7 @@ import qs.modules.components
 PanelWindow {
     id: powermenu
 
-    WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.powermenu
+    WlrLayershell.keyboardFocus: Globals.visiblility.powermenu
 
     function togglepowermenu() {
         Globals.visiblility.powermenu = !Globals.visiblility.powermenu; // Simple toggle logic kept in a function as it might have more things to it later on.

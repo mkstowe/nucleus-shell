@@ -79,7 +79,6 @@ ContentMenu {
                             workspaces: { 
                                 enabled: true, 
                                 showAppIcons: true, 
-                                showJapaneseNumbers: false, 
                                 workspaceIndicators: 8 
                             }
                         },
@@ -239,15 +238,8 @@ ContentMenu {
             title: "Show App Icons"
             description: "Display application icons in workspace indicators"
             prefField: barKey + ".modules.workspaces.showAppIcons"
-            enabled: !barKey.modules.workspaces.showJapaneseNumbers && Compositor.require("hyprland")
-            opacity: !barKey.modules.workspaces.showJapaneseNumbers && Compositor.require("hyprland") ? 1 : 0.8
-        }
-        StyledSwitchOption { 
-            title: "Show Japanese Numbers"
-            description: "Use Japanese-style numbers instead of standard numerals"
-            prefField: barKey + ".modules.workspaces.showJapaneseNumbers"
-            enabled: !barKey.modules.workspaces.showAppIcons
-            opacity: !barKey.modules.workspaces.showAppIcons ? 1 : 0.8
+            enabled: Compositor.require("hyprland")
+            opacity: Compositor.require("hyprland") ? 1 : 0.8
         }
 
         StyledText { 

@@ -4,7 +4,7 @@ import QtQuick
 import qs.services
 
 Singleton {
-    // Prefer Compositor scales because niri and hyprland have diffrent scaling factors
+    // Prefer Compositor scales because compositor-reported scaling can differ from raw output size.
     function scaledWidth(ratio) {
         return Compositor.screenW * ratio / Compositor.screenScale
     }

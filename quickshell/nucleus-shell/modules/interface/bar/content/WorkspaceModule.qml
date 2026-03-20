@@ -15,23 +15,6 @@ Item {
     property var workspaceOccupied: []
     property var occupiedRanges: []
 
-    function japaneseNumber(num) {
-        var kanjiMap = {
-            "0": "零",
-            "1": "一",
-            "2": "二",
-            "3": "三",
-            "4": "四",
-            "5": "五",
-            "6": "六",
-            "7": "七",
-            "8": "八",
-            "9": "九",
-            "10": "十"
-        };
-        return kanjiMap[num] !== undefined ? kanjiMap[num] : "Number out of range";
-    }
-
     function updateWorkspaceOccupied() {
         const offset = 1;
         workspaceOccupied = Array.from({
@@ -122,10 +105,7 @@ Item {
                 if (!Compositor.focusedWorkspaceId)
                     return 0;
 
-                if (Compositor.require("hyprland"))
-                    return Compositor.focusedWorkspaceId - 1;
-                // Hyprland starts at 2 internally
-                return Compositor.focusedWorkspaceId - 2; // Niri or default
+                return Compositor.focusedWorkspaceId - 1;
             }
             property real targetX: Math.min(highlightIndex, numWorkspaces - 1) * (itemWidth + spacing) + 7.3
             property real animatedX1: targetX
@@ -210,18 +190,10 @@ Item {
 
                     }
 
-                    // Kanji mode — only if not Hyprland
+                    // Numbers mode
                     StyledText {
                         anchors.centerIn: parent
-                        visible: ConfigResolver.bar(displayName).modules.workspaces.showJapaneseNumbers && !ConfigResolver.bar(displayName).modules.workspaces.showAppIcons
-                        text: japaneseNumber(index + 1)
-                        rotation: (ConfigResolver.bar(displayName).position === "left" || ConfigResolver.bar(displayName).position === "right") ? 270 : 0
-                    }
-
-                    // Numbers mode — only if not Hyprland
-                    StyledText {
-                        anchors.centerIn: parent
-                        visible: !ConfigResolver.bar(displayName).modules.workspaces.showJapaneseNumbers && !ConfigResolver.bar(displayName).modules.workspaces.showAppIcons
+                        visible: !ConfigResolver.bar(displayName).modules.workspaces.showAppIcons
                         text: index + 1
                         rotation: (ConfigResolver.bar(displayName).position === "left" || ConfigResolver.bar(displayName).position === "right") ? 270 : 0
                     }

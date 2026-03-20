@@ -19,7 +19,7 @@ PanelWindow {
     visible: Config.initialized
     color: "transparent"
     exclusiveZone: 0
-    WlrLayershell.keyboardFocus: Compositor.require("niri") && Globals.visiblility.sidebarRight
+    WlrLayershell.keyboardFocus: Globals.visiblility.sidebarRight
 
     property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout
 
