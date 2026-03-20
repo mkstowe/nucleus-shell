@@ -251,10 +251,6 @@ Scope {
                 function change() {
                     wallpaperProc.running = true
                 }
-
-                function next() {
-                    WallpaperSlideshow.nextWallpaper()
-                }
             }
         }
     }

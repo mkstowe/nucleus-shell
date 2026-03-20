@@ -12,12 +12,6 @@
                 "enableSidebarRight": false,
                 "enabled": false,
                 "zoom": 1.1
-            },
-            "slideshow": {
-                "enabled": false,
-                "folder": "",
-                "includeSubfolders": true,
-                "interval": 5
             }
         },
         "colors": {
@@ -105,7 +99,6 @@
     },
     "shell": {
         "qsVersion": "0.0.0",
-        "releaseChannel": "stable",
         "version": "0.7.7"
     }
 }

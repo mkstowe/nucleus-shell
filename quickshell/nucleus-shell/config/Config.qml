@@ -111,12 +111,6 @@ Singleton {
                         property bool enableSidebarRight: true
                         property real zoom: 1.10
                     }
-                    property JsonObject slideshow: JsonObject {
-                        property bool enabled: false
-                        property bool includeSubfolders: true
-                        property int interval: 5
-                        property string folder: ""
-                    }
                 }
             }
 
@@ -137,7 +131,6 @@ Singleton {
             }
             property JsonObject shell: JsonObject {
                 property string version: "0.7.7"
-                property string releaseChannel: "stable"
                 property string qsVersion: "0.0.0"
             }
             property JsonObject overlays: JsonObject {

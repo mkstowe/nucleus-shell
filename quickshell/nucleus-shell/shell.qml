@@ -79,7 +79,6 @@ ShellRoot {
     Settings { }
     Ipc { }
     Intelligence { }
-    UpdateNotifier { }
     ScreenCapture{ }
     PolkitAgent { }
 }
