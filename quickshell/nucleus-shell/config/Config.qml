@@ -196,17 +196,6 @@ Singleton {
                         property bool enableSidebarRight: true
                         property real zoom: 1.10
                     }
-                    property JsonObject clock: JsonObject {
-                        property bool enabled: true 
-                        property bool isAnalog: true
-                        property bool rotatePolygonBg: false 
-                        property int rotationDuration: 18 // lower the faster
-                        property int edgeSpacing: 50
-                        property int shape: 1
-                        property int xPos: 0
-                        property int yPos: 0
-                        property bool animateHands: false
-                    }
                     property JsonObject slideshow: JsonObject {
                         property bool enabled: false
                         property bool includeSubfolders: true

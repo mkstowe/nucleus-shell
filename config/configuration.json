@@ -5,17 +5,6 @@
             "enabled": true
         },
         "background": {
-            "clock": {
-                "animateHands": false,
-                "edgeSpacing": 50,
-                "enabled": false,
-                "isAnalog": true,
-                "rotatePolygonBg": false,
-                "rotationDuration": 18,
-                "shape": 1,
-                "xPos": 0,
-                "yPos": 0
-            },
             "defaultPath": "/home/mkstowe/.config/nucleus-shell/quickshell/nucleus-shell/defaults/default.jpg",
             "enabled": true,
             "parallax": {
