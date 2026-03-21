@@ -3,7 +3,7 @@ import QtQuick.Layouts
 import Quickshell
 import Quickshell.Io
 import Quickshell.Wayland
-import Quickshell.Hyprland
+import Quickshell.Hyprland as QsHyprland
 import qs.config
 import qs.modules.functions
 import qs.modules.components
@@ -40,7 +40,7 @@ Scope {
             property int workspaceRange: Math.max(1, monitorWorkspaceIds.length)
 
             // hyprland
-            property int activeWorkspaceId: Hyprland.focusedWorkspace?.id ?? 1
+            property int activeWorkspaceId: QsHyprland.focusedWorkspace?.id ?? 1
 
             // wallpaper geometry
             property real wallpaperWidth: bgImg.implicitWidth

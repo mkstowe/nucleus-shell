@@ -41,6 +41,8 @@ Item {
                     height: 26
 
                     Rectangle {
+                        id: indicator
+
                         anchors.centerIn: parent
                         width: focused ? 12 : 10
                         height: width
@@ -50,6 +52,67 @@ Item {
                             : (occupied ? "#FFFFFF" : "transparent")
                         border.width: focused || occupied ? 0 : 2
                         border.color: "#FFFFFF"
+
+                        Behavior on width {
+                            enabled: Config.runtime.appearance.animations.enabled
+
+                            NumberAnimation {
+                                duration: Metrics.chronoDuration(180)
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Behavior on color {
+                            enabled: Config.runtime.appearance.animations.enabled
+
+                            ColorAnimation {
+                                duration: Metrics.chronoDuration(220)
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Behavior on border.width {
+                            enabled: Config.runtime.appearance.animations.enabled
+
+                            NumberAnimation {
+                                duration: Metrics.chronoDuration(180)
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        Behavior on border.color {
+                            enabled: Config.runtime.appearance.animations.enabled
+
+                            ColorAnimation {
+                                duration: Metrics.chronoDuration(220)
+                                easing.type: Easing.OutCubic
+                            }
+                        }
+
+                        transform: Scale {
+                            origin.x: indicator.width / 2
+                            origin.y: indicator.height / 2
+                            xScale: focused ? 1.08 : 1.0
+                            yScale: focused ? 1.08 : 1.0
+
+                            Behavior on xScale {
+                                enabled: Config.runtime.appearance.animations.enabled
+
+                                NumberAnimation {
+                                    duration: Metrics.chronoDuration(220)
+                                    easing.type: Easing.OutBack
+                                }
+                            }
+
+                            Behavior on yScale {
+                                enabled: Config.runtime.appearance.animations.enabled
+
+                                NumberAnimation {
+                                    duration: Metrics.chronoDuration(220)
+                                    easing.type: Easing.OutBack
+                                }
+                            }
+                        }
                     }
 
                     MouseArea {
