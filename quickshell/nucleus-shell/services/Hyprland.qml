@@ -33,8 +33,10 @@ Singleton {
     property var layers: ({})
     property var monitorsInfo: []
     property var workspacesInfo: []
+    property var workspaceRulesInfo: []
     property var workspaceById: ({})
     property var workspaceIds: []
+    property var workspaceIdsByMonitor: ({})
     property var activeWorkspaceInfo: null
     property string keyboardLayout: "?"
 
@@ -68,6 +70,20 @@ Singleton {
         return Hyprland.workspaces.values.find(w => w?.id === id)?.lastIpcObject.windows > 0 || false
     }
 
+    function workspaceIdsForMonitor(monitorName) {
+        if (!isHyprland || !monitorName)
+            return []
+
+        const assigned = root.workspaceIdsByMonitor[monitorName]
+        if (assigned && assigned.length > 0)
+            return assigned
+
+        return root.workspacesInfo
+            .filter(ws => ws?.monitor === monitorName)
+            .map(ws => ws.id)
+            .sort((a, b) => a - b)
+    }
+
     // update all hyprctl processes
     function updateAll() {
         if (!isHyprland) return
@@ -75,6 +91,7 @@ Singleton {
         getLayers.running = true
         getMonitors.running = true
         getWorkspaces.running = true
+        getWorkspaceRules.running = true
         getActiveWorkspace.running = true
     }
 
@@ -178,6 +195,44 @@ Singleton {
                     root.workspaceById = map
                     root.workspaceIds = root.workspacesInfo.map(ws => ws.id)
                 } catch (e) { console.error("Failed to parse workspaces:", e) }
+            }
+        }
+    }
+
+    Process {
+        id: getWorkspaceRules
+        running: false
+        command: ["hyprctl", "workspacerules", "-j"]
+        stdout: StdioCollector {
+            onStreamFinished: {
+                try {
+                    root.workspaceRulesInfo = JSON.parse(this.text)
+                    let grouped = {}
+
+                    for (let rule of root.workspaceRulesInfo) {
+                        const monitorName = rule?.monitor
+                        const workspaceString = rule?.workspaceString ?? rule?.workspace
+                        const workspaceId = parseInt(workspaceString, 10)
+
+                        if (!monitorName || Number.isNaN(workspaceId))
+                            continue
+
+                        if (!grouped[monitorName])
+                            grouped[monitorName] = []
+
+                        if (!grouped[monitorName].includes(workspaceId))
+                            grouped[monitorName].push(workspaceId)
+                    }
+
+                    for (let monitorName in grouped)
+                        grouped[monitorName].sort((a, b) => a - b)
+
+                    root.workspaceIdsByMonitor = grouped
+                } catch (e) {
+                    console.error("Failed to parse workspacerules:", e)
+                    root.workspaceRulesInfo = []
+                    root.workspaceIdsByMonitor = ({})
+                }
             }
         }
     }

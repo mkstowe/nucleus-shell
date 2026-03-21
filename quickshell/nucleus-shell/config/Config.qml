@@ -157,8 +157,6 @@ Singleton {
                     property int height: 34
                     property JsonObject workspaces: JsonObject {
                         property bool enabled: true
-                        property int workspaceIndicators: 8
-                        property bool showAppIcons: true 
                     }
                     property JsonObject statusIcons: JsonObject {
                         property bool enabled: true

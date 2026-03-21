@@ -77,9 +77,7 @@ ContentMenu {
                                 tempStatsEnabled: true 
                             },
                             workspaces: { 
-                                enabled: true, 
-                                showAppIcons: true, 
-                                workspaceIndicators: 8 
+                                enabled: true 
                             }
                         },
                         position: "top",
@@ -208,13 +206,6 @@ ContentMenu {
             minimum: 10
             maximum: 128
         }
-        NumberStepper { 
-            label: "Workspace Indicators"
-            prefField: barKey + ".modules.workspaces.workspaceIndicators"
-            description: "Adjust how many workspace indicators to show."
-            minimum: 1
-            maximum: 10
-        }
     }
 
     ContentCard {
@@ -234,14 +225,6 @@ ContentMenu {
             description: "Show workspace indicator module"
             prefField: barKey + ".modules.workspaces.enabled" 
         }
-        StyledSwitchOption { 
-            title: "Show App Icons"
-            description: "Display application icons in workspace indicators"
-            prefField: barKey + ".modules.workspaces.showAppIcons"
-            enabled: Compositor.require("hyprland")
-            opacity: Compositor.require("hyprland") ? 1 : 0.8
-        }
-
         StyledText { 
             text: "Status Icons"
             font.pixelSize: Metrics.fontSize(18)

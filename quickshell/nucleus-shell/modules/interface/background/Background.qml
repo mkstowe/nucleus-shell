@@ -36,7 +36,8 @@ Scope {
             // parallax config
             property bool parallaxEnabled: Config.runtime.appearance.background.parallax.enabled
             property real parallaxZoom: Config.runtime.appearance.background.parallax.zoom
-            property int workspaceRange: Config.runtime.bar.modules.workspaces.workspaceIndicators
+            property var monitorWorkspaceIds: Hyprland.workspaceIdsForMonitor(displayName)
+            property int workspaceRange: Math.max(1, monitorWorkspaceIds.length)
 
             // hyprland
             property int activeWorkspaceId: Hyprland.focusedWorkspace?.id ?? 1

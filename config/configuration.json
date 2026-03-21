@@ -65,9 +65,7 @@
                 "tempStatsEnabled": true
             },
             "workspaces": {
-                "enabled": true,
-                "showAppIcons": true,
-                "workspaceIndicators": 8
+                "enabled": true
             }
         },
         "position": "top",
