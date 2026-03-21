@@ -34,8 +34,8 @@ Item {
             iconColor: Appearance.m3colors.m3error
             toggle: Globals.visiblility.sidebarLeft
 
-            onToggled: function(value) {
-                Globals.visiblility.sidebarLeft = value
+            onToggled: function() {
+                Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
             }
         }
 
@@ -53,35 +53,14 @@ Item {
         spacing: Metrics.spacing(4)
         anchors.rightMargin: ConfigResolver.bar(displayName).density * 0.3
 
-        SystemTray {
-            id: sysTray
-        }
-
-        StyledText {
-            id: seperator
-            visible: (sysTray.items.count > 0) && ConfigResolver.bar(displayName).modules.statusIcons.enabled
-            Layout.alignment: Qt.AlignLeft
-            font.pixelSize: Metrics.fontSize("hugeass")
-            text: "·"
-        }
-
-        StatusIconsModule {}
-
-        StyledText {
-            id: seperator2
-            Layout.alignment: Qt.AlignLeft
-            font.pixelSize: Metrics.fontSize("hugeass")
-            text: "·"
-        }
-
         ToggleModule {
-            icon: "power_settings_new"
+            icon: "right_panel_open"
             iconSize: Metrics.iconSize(22)
-            iconColor: Appearance.m3colors.m3error
-            toggle: Globals.visiblility.powermenu
+            iconColor: Appearance.m3colors.m3primary
+            toggle: Globals.visiblility.sidebarRight
 
-            onToggled: function(value) {
-                Globals.visiblility.powermenu = value
+            onToggled: function() {
+                Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
             }
         }
     }
@@ -108,8 +87,8 @@ Item {
                 toggle: Globals.visiblility.sidebarLeft
                 rotation: 270
 
-                onToggled: function(value) {
-                    Globals.visiblility.sidebarLeft = value
+                onToggled: function() {
+                    Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
                 }
             }
 
@@ -153,20 +132,15 @@ Item {
             spacing: Metrics.spacing(6)
             rotation: 90
 
-            ClockModule {
-                rotation: 270
-            }
-
-            StatusIconsModule {}
             ToggleModule {
-                icon: "power_settings_new"
+                icon: "right_panel_open"
                 iconSize: Metrics.iconSize(22)
-                iconColor: Appearance.m3colors.m3error
-                toggle: Globals.visiblility.powermenu
+                iconColor: Appearance.m3colors.m3primary
+                toggle: Globals.visiblility.sidebarRight
                 rotation: 270
 
-                onToggled: function(value) {
-                    Globals.visiblility.powermenu = value
+                onToggled: function() {
+                    Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
                 }
             }
         }

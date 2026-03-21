@@ -38,6 +38,7 @@ StyledRect {
         id: ma
         anchors.fill: parent
         hoverEnabled: true
-        onClicked: bg.toggled(!bg.toggle)
+        preventStealing: true
+        onPressed: bg.toggled(!bg.toggle)
     }
 }

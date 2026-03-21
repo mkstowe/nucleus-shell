@@ -16,10 +16,10 @@ PanelWindow {
     id: sidebarRight
     WlrLayershell.namespace: "nucleus:sidebarRight"
     WlrLayershell.layer: WlrLayer.Top
-    visible: Config.initialized
+    visible: Config.initialized && (Globals.visiblility.sidebarRight || floatingContainer.width > 0 || container.implicitWidth > 0)
     color: "transparent"
     exclusiveZone: 0
-    WlrLayershell.keyboardFocus: Globals.visiblility.sidebarRight
+    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
 
     property bool useMergedSidebarLayout: Config.runtime.misc.useMergedSidebarLayout
 
@@ -33,7 +33,7 @@ PanelWindow {
 
     HyprlandFocusGrab {
         id: grab
-        active: Compositor.require("hyprland")
+        active: false
         windows: [sidebarRight]
     }
 
