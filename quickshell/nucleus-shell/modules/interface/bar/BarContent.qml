@@ -16,10 +16,7 @@ Item {
         anchors.centerIn: parent
         spacing: Metrics.spacing(4)
 
-        SystemUsageModule {}
-        MediaPlayerModule {}
-        ActiveWindowModule {}
-        ClockModule {}
+        WorkspaceModule {}
     }
 
     RowLayout {
@@ -42,7 +39,9 @@ Item {
             }
         }
 
-        WorkspaceModule {}
+        SystemUsageModule {}
+        MediaPlayerModule {}
+        ClockModule {}
     }
 
     RowLayout {
