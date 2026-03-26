@@ -205,10 +205,6 @@ Item {
                     Layout.preferredWidth: 220
                     Layout.preferredHeight: 80
                 }
-                ThemeToggle {
-                    Layout.preferredHeight: 80
-                    Layout.fillWidth: true
-                }
             }
         }
 

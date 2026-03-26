@@ -21,10 +21,18 @@ Item {
         spacing: Metrics.margin("small")
 
         // Header
-        RowLayout {
+        Item {
             Layout.fillWidth: true
+            implicitHeight: headerLeft.implicitHeight
 
             RowLayout {
+                id: headerLeft
+                anchors {
+                    left: parent.left
+                    right: headerRight.left
+                    rightMargin: Metrics.margin("normal")
+                    verticalCenter: parent.verticalCenter
+                }
                 spacing: Metrics.margin("normal")
 
                 StyledText {
@@ -35,46 +43,38 @@ Item {
                 }
 
                 ColumnLayout {
+                    width: parent.width - x
                     spacing: Metrics.spacing(2)
 
                     StyledText {
                         text: SystemDetails.osName
+                        width: parent.width
                         font.pixelSize: Metrics.fontSize("large")
                         color: Appearance.m3colors.m3onSurface
+                        elide: Text.ElideRight
                     }
 
                     StyledText {
                         text: `${SystemDetails.username}@${SystemDetails.hostname}`
+                        width: parent.width
                         font.pixelSize: Metrics.fontSize("small")
                         color: Appearance.colors.colSubtext
+                        elide: Text.ElideRight
                     }
 
                 }
 
             }
 
-            Item {
-                Layout.fillWidth: true
-            }
-
             ColumnLayout {
+                id: headerRight
+                width: 220
+                anchors {
+                    right: parent.right
+                    verticalCenter: parent.verticalCenter
+                }
                 spacing: Metrics.spacing(2)
-                Layout.alignment: Qt.AlignRight
-
-                StyledText {
-                    text: `qs ${SystemDetails.qsVersion}`
-                    font.pixelSize: Metrics.fontSize("small")
-                    color: Appearance.colors.colSubtext
-                }
-
-                StyledText {
-                    text: `nucleus-shell v${Config.runtime.shell.version}`
-                    font.pixelSize: Metrics.fontSize("smaller")
-                    color: Appearance.colors.colSubtext
-                }
-
             }
-
         }
 
         Rectangle {

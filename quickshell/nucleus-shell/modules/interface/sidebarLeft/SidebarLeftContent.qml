@@ -13,6 +13,7 @@ import qs.services
 Item {
     anchors.fill: parent
     anchors.leftMargin: 16
+    anchors.rightMargin: 16
 
     SwipeView {
         id: view
@@ -21,8 +22,6 @@ Item {
 
         IntelligencePanel {}
         SystemOverview {}
-        WallpapersPage {}
-
     }
 
     Rectangle {
@@ -85,9 +84,6 @@ Item {
                 }, {
                     "icon": "overview",
                     "text": "Overview"
-                }, {
-                    "icon": "wallpaper",
-                    "text": "Wallpapers"
                 }]
 
                 Item {
