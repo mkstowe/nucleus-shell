@@ -31,9 +31,11 @@ Scope {
             property bool attachedRight: pos === "right"
 
             screen: modelData // Show bar on all screens
-            visible: ConfigResolver.bar(displayName).enabled && Config.initialized
+            visible: ConfigResolver.bar(displayName).enabled
+                && Config.initialized
+                && !Hyprland.hasFullscreenWindowOnMonitor(displayName)
             WlrLayershell.namespace: "nucleus:bar"
-            WlrLayershell.layer: WlrLayer.Overlay
+            WlrLayershell.layer: WlrLayer.Top
             exclusiveZone: ConfigResolver.bar(displayName).floating ? ConfigResolver.bar(displayName).density + Metrics.margin("tiny") : ConfigResolver.bar(displayName).density
             implicitHeight: ConfigResolver.bar(displayName).density // density === height. (horizontal orientation)
             implicitWidth: ConfigResolver.bar(displayName).density // density === width. (vertical orientation)

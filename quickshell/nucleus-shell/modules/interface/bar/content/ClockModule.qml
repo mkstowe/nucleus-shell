@@ -7,7 +7,7 @@ import qs.modules.components
 Item {
     id: clockContainer
 
-    property string format: isVertical ? "hh\nmm\nAP" : "hh:mm • dd/MM"
+    property string format: isVertical ? "hh\nmm\nAP" : "dddd, MMMM d | h:mm AP"
     property bool isVertical: (ConfigResolver.bar(screen?.name ?? "").position === "left" || ConfigResolver.bar(screen?.name ?? "").position === "right")
 
     Layout.alignment: Qt.AlignVCenter

@@ -29,19 +29,17 @@ Item {
         anchors.leftMargin: ConfigResolver.bar(displayName).density * 0.3
 
         ToggleModule {
-            icon: "menu"
+            icon: "left_panel_open"
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3error
             toggle: Globals.visiblility.sidebarLeft
 
-            onToggled: function() {
-                Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
+            onToggled: function () {
+                Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft;
             }
         }
 
-        SystemUsageModule {}
         MediaPlayerModule {}
-        ClockModule {}
     }
 
     RowLayout {
@@ -53,14 +51,17 @@ Item {
         spacing: Metrics.spacing(4)
         anchors.rightMargin: ConfigResolver.bar(displayName).density * 0.3
 
+        SystemUsageModule {}
+        ClockModule {}
+
         ToggleModule {
             icon: "right_panel_open"
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3primary
             toggle: Globals.visiblility.sidebarRight
 
-            onToggled: function() {
-                Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
+            onToggled: function () {
+                Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight;
             }
         }
     }
@@ -87,8 +88,8 @@ Item {
                 toggle: Globals.visiblility.sidebarLeft
                 rotation: 270
 
-                onToggled: function() {
-                    Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft
+                onToggled: function () {
+                    Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft;
                 }
             }
 
@@ -139,8 +140,8 @@ Item {
                 toggle: Globals.visiblility.sidebarRight
                 rotation: 270
 
-                onToggled: function() {
-                    Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight
+                onToggled: function () {
+                    Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight;
                 }
             }
         }

@@ -84,6 +84,18 @@ Singleton {
             .sort((a, b) => a - b)
     }
 
+    function hasFullscreenWindowOnMonitor(monitorName) {
+        if (!isHyprland || !monitorName)
+            return false
+
+        return root.windowList.some(win => {
+            if (win?.monitor !== monitorName)
+                return false
+
+            return Boolean(win?.fullscreen) || Boolean(win?.fullscreenClient)
+        })
+    }
+
     // update all hyprctl processes
     function updateAll() {
         if (!isHyprland) return
