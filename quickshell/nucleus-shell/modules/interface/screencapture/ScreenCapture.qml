@@ -49,6 +49,12 @@ Scope {
             property string displayName: screen?.name ?? focusedMonitorInfo?.name ?? ""
             property var monitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.name === displayName) ?? focusedMonitorInfo ?? null
             property var barConfig: ConfigResolver.bar(displayName)
+            property real monitorScale: monitorInfo?.scale ?? 1
+            property real logicalMonitorWidth: monitorInfo ? monitorInfo.width / monitorScale : win.screen.width
+            property real logicalMonitorHeight: monitorInfo ? monitorInfo.height / monitorScale : win.screen.height
+            property real logicalMonitorX: monitorInfo?.x ?? 0
+            property real logicalMonitorY: monitorInfo?.y ?? 0
+            property bool nativeRegionSelection: true
             property real captureOffsetX: {
                 if (!barConfig?.enabled || barConfig?.floating)
                     return 0;
@@ -181,10 +187,16 @@ Scope {
             }
 
             function captureRegion() {
-                if (!ready || !selection.hasSelection)
-                    return;
                 win.processing = true;
-                saveRegion(root.selectedRegion, "_region");
+                var ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
+                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + "_region.png";
+                win.deferredCommand =
+                    "sleep 0.1 && "
+                    + "selection=$(slurp) && [ -n \"$selection\" ] && "
+                    + "grim -g \"$selection\" '" + win.savedPath + "'"
+                    + " && wl-copy --type image/png < '" + win.savedPath + "'";
+                win.savedSuccess = true;
+                win.close();
             }
 
             ScreencopyView {
@@ -224,6 +236,9 @@ Scope {
                 Keys.onPressed: event => {
                     if (event.key === Qt.Key_F) {
                         win.captureFullscreen();
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_R) {
+                        win.captureRegion();
                         event.accepted = true;
                     } else if (event.key === Qt.Key_W) {
                         win.windowMode = !win.windowMode;
@@ -284,7 +299,9 @@ Scope {
                     Item {
                         id: darkOverlay
                         anchors.fill: parent
-                        visible: (selection.hasSelection || selection.selecting) && !win.windowMode
+                        visible: !win.nativeRegionSelection
+                            && (selection.hasSelection || selection.selecting)
+                            && !win.windowMode
 
                         Rectangle {
                             y: 0
@@ -347,11 +364,13 @@ Scope {
                         color: "transparent"
                         border.color: Appearance.m3colors.m3primary
                         border.width: 2
-                        visible: (selection.selecting || selection.hasSelection) && !win.windowMode
+                        visible: !win.nativeRegionSelection
+                            && (selection.selecting || selection.hasSelection)
+                            && !win.windowMode
                     }
 
                     Rectangle {
-                        visible: selection.selecting
+                        visible: !win.nativeRegionSelection && selection.selecting
                         anchors.top: outline.bottom
                         anchors.topMargin: Metrics.margin(10)
                         anchors.horizontalCenter: outline.horizontalCenter
@@ -366,16 +385,19 @@ Scope {
                             font.pixelSize: Metrics.fontSize(14)
                             animate: false
                             color: Appearance.m3colors.m3onSurface
-                            property real scaleX: container.width / win.width
-                            property real scaleY: container.height / win.height
-                            text: Math.floor(selection.sx / scaleX) + "," + Math.floor(selection.sy / scaleY) + " " + Math.floor(selection.w / scaleX) + "x" + Math.floor(selection.h / scaleY)
+                            property real scaleX: selection.previewWidth > 0 ? selection.availableWidth / selection.previewWidth : 1
+                            property real scaleY: selection.previewHeight > 0 ? selection.availableHeight / selection.previewHeight : 1
+                            text: Math.floor((selection.sx - selection.previewX) * scaleX)
+                                + "," + Math.floor((selection.sy - selection.previewY) * scaleY)
+                                + " " + Math.floor(selection.w * scaleX)
+                                + "x" + Math.floor(selection.h * scaleY)
                         }
                     }
 
                     MouseArea {
                         id: selection
                         anchors.fill: parent
-                        enabled: win.ready && !win.windowMode
+                        enabled: win.ready && !win.windowMode && !win.nativeRegionSelection
 
                         property real x1: 0
                         property real y1: 0
@@ -388,17 +410,23 @@ Scope {
                         property real yp: 0
                         property real wp: 0
                         property real hp: 0
+                        property real previewWidth: frozen.paintedWidth > 0 ? frozen.paintedWidth : width
+                        property real previewHeight: frozen.paintedHeight > 0 ? frozen.paintedHeight : height
+                        property real previewX: (width - previewWidth) / 2
+                        property real previewY: (height - previewHeight) / 2
+                        property real availableWidth: win.logicalMonitorWidth - win.captureOffsetX
+                        property real availableHeight: win.logicalMonitorHeight - win.captureOffsetY
 
-                        property real sx: xp * parent.width
-                        property real sy: yp * parent.height
-                        property real w: wp * parent.width
-                        property real h: hp * parent.height
+                        property real sx: previewX + xp * previewWidth
+                        property real sy: previewY + yp * previewHeight
+                        property real w: wp * previewWidth
+                        property real h: hp * previewHeight
 
                         onPressed: mouse => {
                             if (!win.ready)
                                 return;
-                            x1 = Math.max(0, Math.min(mouse.x, width));
-                            y1 = Math.max(0, Math.min(mouse.y, height));
+                            x1 = Math.max(previewX, Math.min(mouse.x, previewX + previewWidth));
+                            y1 = Math.max(previewY, Math.min(mouse.y, previewY + previewHeight));
                             x2 = x1;
                             y2 = y1;
                             selecting = true;
@@ -407,12 +435,12 @@ Scope {
 
                         onPositionChanged: mouse => {
                             if (selecting) {
-                                x2 = Math.max(0, Math.min(mouse.x, width));
-                                y2 = Math.max(0, Math.min(mouse.y, height));
-                                xp = Math.min(x1, x2) / width;
-                                yp = Math.min(y1, y2) / height;
-                                wp = Math.abs(x2 - x1) / width;
-                                hp = Math.abs(y2 - y1) / height;
+                                x2 = Math.max(previewX, Math.min(mouse.x, previewX + previewWidth));
+                                y2 = Math.max(previewY, Math.min(mouse.y, previewY + previewHeight));
+                                xp = (Math.min(x1, x2) - previewX) / previewWidth;
+                                yp = (Math.min(y1, y2) - previewY) / previewHeight;
+                                wp = Math.abs(x2 - x1) / previewWidth;
+                                hp = Math.abs(y2 - y1) / previewHeight;
                             }
                         }
 
@@ -420,19 +448,24 @@ Scope {
                             if (!selecting)
                                 return;
 
-                            x2 = Math.max(0, Math.min(mouse.x, width));
-                            y2 = Math.max(0, Math.min(mouse.y, height));
+                            x2 = Math.max(previewX, Math.min(mouse.x, previewX + previewWidth));
+                            y2 = Math.max(previewY, Math.min(mouse.y, previewY + previewHeight));
                             selecting = false;
 
                             hasSelection = Math.abs(x2 - x1) > 5 && Math.abs(y2 - y1) > 5;
 
                             if (hasSelection) {
-                                xp = Math.min(x1, x2) / width;
-                                yp = Math.min(y1, y2) / height;
-                                wp = Math.abs(x2 - x1) / width;
-                                hp = Math.abs(y2 - y1) / height;
+                                xp = (Math.min(x1, x2) - previewX) / previewWidth;
+                                yp = (Math.min(y1, y2) - previewY) / previewHeight;
+                                wp = Math.abs(x2 - x1) / previewWidth;
+                                hp = Math.abs(y2 - y1) / previewHeight;
 
-                                root.selectedRegion = Qt.rect(Math.min(x1, x2) * win.screen.width / width, Math.min(y1, y2) * win.screen.height / height, Math.abs(x2 - x1) * win.screen.width / width, Math.abs(y2 - y1) * win.screen.height / height);
+                                root.selectedRegion = Qt.rect(
+                                    win.logicalMonitorX + win.captureOffsetX + xp * availableWidth,
+                                    win.logicalMonitorY + win.captureOffsetY + yp * availableHeight,
+                                    Math.abs(x2 - x1) * availableWidth / previewWidth,
+                                    Math.abs(y2 - y1) * availableHeight / previewHeight
+                                );
 
                                 win.captureRegion();
                             } else {
@@ -503,7 +536,7 @@ Scope {
                     }
 
                     ParallelAnimation {
-                        running: win.visible && !win.closing && frozen.source != ""
+                        running: win.visible && !win.closing && frozen.source != "" && win.windowMode
 
                         NumberAnimation {
                             target: bg
@@ -612,6 +645,18 @@ Scope {
                             text: "Full screen"
                             tooltipText: "Capture the whole screen [F]"
                             onClicked: win.captureFullscreen()
+                        }
+                        Rectangle {
+                            Layout.fillHeight: true
+                            width: 2
+                            color: Appearance.m3colors.m3onSurfaceVariant
+                            opacity: 0.2
+                        }
+                        StyledButton {
+                            icon: "screenshot_region"
+                            text: "Region"
+                            tooltipText: "Select a region natively [R]"
+                            onClicked: win.captureRegion()
                         }
                         Rectangle {
                             Layout.fillHeight: true
