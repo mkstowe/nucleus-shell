@@ -81,6 +81,7 @@ Item {
                         anchors.centerIn: parent
                         iconSize: Metrics.iconSize("hugeass") + 2
                         tooltipText: "Take a screenshot"
+                        tooltipOffsetY: Metrics.margin(64)
 
                         onButtonClicked: {
                             Globals.states.screenCaptureOpen = true;
@@ -105,6 +106,7 @@ Item {
                         anchors.centerIn: parent
                         iconSize: Metrics.iconSize("hugeass") + 4
                         tooltipText: "Reload Nucleus Shell"
+                        tooltipOffsetY: Metrics.margin(64)
 
                         onButtonClicked: {
                             Quickshell.execDetached(["nucleus", "run", "--reload"]);
@@ -128,6 +130,7 @@ Item {
                         anchors.centerIn: parent
                         iconSize: Metrics.iconSize("hugeass") + 2
                         tooltipText: "Open Settings"
+                        tooltipOffsetY: Metrics.margin(64)
                         onButtonClicked: {
                             Globals.visiblility.sidebarRight = false;
                             Globals.states.settingsOpen = true;
@@ -151,6 +154,7 @@ Item {
                         anchors.centerIn: parent
                         iconSize: Metrics.iconSize("hugeass") + 2
                         tooltipText: "Open PowerMenu"
+                        tooltipOffsetY: Metrics.margin(64)
 
                         onButtonClicked: {
                             Globals.visiblility.sidebarRight = false;

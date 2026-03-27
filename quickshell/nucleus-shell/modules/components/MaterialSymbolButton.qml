@@ -10,6 +10,8 @@ MaterialSymbol {
     property alias hoverEnabled: ma.hoverEnabled
     property alias pressed: ma.pressed
     property string tooltipText: ""
+    property real tooltipOffsetX: 0
+    property real tooltipOffsetY: 0
 
     // Renamed signals (no collisions possible)
     signal buttonClicked()
@@ -41,6 +43,8 @@ MaterialSymbol {
         StyledPopout {
             hoverTarget: hover
             hoverDelay: Metrics.chronoDuration(500)
+            offsetX: root.tooltipOffsetX
+            offsetY: root.tooltipOffsetY
 
             Component {
                 StyledText {

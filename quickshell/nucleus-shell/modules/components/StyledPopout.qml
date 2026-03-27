@@ -21,6 +21,8 @@ LazyLoader {
     property bool hasHitbox: true
     property bool hCenterOnItem: false
     property bool followMouse: false
+    property real offsetX: 0
+    property real offsetY: 0
     property list<StyledPopout> childPopouts: []
 
     property bool requiresHover: true
@@ -219,6 +221,7 @@ LazyLoader {
                     }
                 }
 
+                xValue += root.offsetX;
                 return root.cleanupTimer.running ? xValue : Math.round(xValue);
             }
 
@@ -267,6 +270,7 @@ LazyLoader {
                     }
                 }
 
+                yValue += root.offsetY;
                 return root.cleanupTimer.running ? yValue : Math.round(yValue);
             }
 
