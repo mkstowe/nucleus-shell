@@ -7,23 +7,30 @@ import QtQuick.Layouts
 import QtQuick.Effects
 import Quickshell.Wayland
 import qs.config
+import qs.services
+import qs.services as ShellServices
 import qs.modules.components
 
 Scope {
     id: root
-    property bool active: false
+    readonly property bool active: Globals.states.screenCaptureOpen
     property rect selectedRegion: Qt.rect(0, 0, 0, 0)
     property string tempScreenshot: ""
+
+    function openCapture() {
+        if (root.active) {
+            console.info("screencap", "already active");
+            return;
+        }
+
+        console.info("screencap", "starting capture");
+        Globals.states.screenCaptureOpen = true;
+    }
 
     IpcHandler {
         target: "screen"
         function capture() {
-            if (root.active) {
-                console.info("screencap", "already active");
-                return;
-            }
-            console.info("screencap", "starting capture");
-            root.active = true;
+            root.openCapture();
         }
     }
 
@@ -37,9 +44,33 @@ Scope {
             property bool windowMode: false
             property string savedPath: ""
             property bool savedSuccess: false
+            property string deferredCommand: ""
+            property var focusedMonitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.focused) ?? null
+            property string displayName: screen?.name ?? focusedMonitorInfo?.name ?? ""
+            property var monitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.name === displayName) ?? focusedMonitorInfo ?? null
+            property var barConfig: ConfigResolver.bar(displayName)
+            property real captureOffsetX: {
+                if (!barConfig?.enabled || barConfig?.floating)
+                    return 0;
+
+                const reservedLeft = monitorInfo?.reserved?.[0] ?? 0;
+                return barConfig.position === "left" ? (reservedLeft > 0 ? reservedLeft : barConfig.density) : 0;
+            }
+            property real captureOffsetY: {
+                if (!barConfig?.enabled || barConfig?.floating)
+                    return 0;
+
+                const reservedTop = monitorInfo?.reserved?.[1] ?? 0;
+                return barConfig.position === "top" ? (reservedTop > 0 ? reservedTop : barConfig.density) : 0;
+            }
 
             color: Appearance.m3colors.m3surface
-            anchors { top: true; left: true; right: true; bottom: true }
+            anchors {
+                top: true
+                left: true
+                right: true
+                bottom: true
+            }
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
             WlrLayershell.namespace: "nucleus:screencapture"
@@ -50,7 +81,8 @@ Scope {
             }
 
             function close() {
-                if (closing) return;
+                if (closing)
+                    return;
                 closing = true;
                 closeAnim.start();
             }
@@ -58,10 +90,10 @@ Scope {
             function saveFullscreen() {
                 console.info("screencap", "saveFullscreen started");
                 win.processing = true;
-                screencopy.grabToImage(function(result) {
+                screencopy.grabToImage(function (result) {
                     console.info("screencap", "fullscreen grabbed");
                     var ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
-                    win.savedPath = Quickshell.env("HOME") + "/Pictures/Screenshots/screenshot_" + ts + ".png";
+                    win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + ".png";
 
                     console.info("screencap", "saving to: " + win.savedPath);
                     if (result.saveToFile(win.savedPath)) {
@@ -86,7 +118,7 @@ Scope {
                     property string outputPath
                     property bool success: false
 
-                    onExited: (code) => {
+                    onExited: code => {
                         console.info("screencap", "ffmpeg exited: " + code);
                         success = code === 0;
 
@@ -97,7 +129,9 @@ Scope {
                             });
                         }
 
-                        Quickshell.execDetached({ command: ["rm", root.tempScreenshot] });
+                        Quickshell.execDetached({
+                            command: ["rm", root.tempScreenshot]
+                        });
 
                         win.savedSuccess = success;
                         win.processing = false;
@@ -110,7 +144,7 @@ Scope {
 
             function saveRegion(rect, suffix) {
                 console.info("screencap", "saveRegion started: " + rect.x + "," + rect.y + " " + rect.width + "x" + rect.height);
-                screencopy.grabToImage(function(result) {
+                screencopy.grabToImage(function (result) {
                     console.info("screencap", "full screenshot grabbed for cropping");
                     if (!result.saveToFile(root.tempScreenshot)) {
                         console.info("screencap", "ERROR: failed to save temp screenshot");
@@ -122,7 +156,7 @@ Scope {
 
                     console.info("screencap", "temp saved, cropping with ffmpeg");
                     var ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
-                    win.savedPath = Quickshell.env("HOME") + "/Pictures/Screenshots/screenshot_" + ts + suffix + ".png";
+                    win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + suffix + ".png";
 
                     ffmpegProc.createObject(win, {
                         command: ["ffmpeg", "-i", root.tempScreenshot, "-vf", "crop=" + Math.floor(rect.width) + ":" + Math.floor(rect.height) + ":" + Math.floor(rect.x) + ":" + Math.floor(rect.y), "-y", win.savedPath],
@@ -139,11 +173,16 @@ Scope {
 
             function captureWindow(rect) {
                 win.processing = true;
-                saveRegion(rect, "_window");
+                var ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
+                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + "_window.png";
+                win.deferredCommand = "sleep 0.1 && " + "grim -g '" + Math.floor(rect.x) + "," + Math.floor(rect.y) + " " + Math.floor(rect.width) + "x" + Math.floor(rect.height) + "' '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'";
+                win.savedSuccess = true;
+                win.close();
             }
 
             function captureRegion() {
-                if (!ready || !selection.hasSelection) return;
+                if (!ready || !selection.hasSelection)
+                    return;
                 win.processing = true;
                 saveRegion(root.selectedRegion, "_region");
             }
@@ -159,7 +198,7 @@ Scope {
                     console.info("screencap", "hasContent: " + hasContent);
                     if (hasContent) {
                         console.info("screencap", "grabbing for preview");
-                        grabToImage(function(result) {
+                        grabToImage(function (result) {
                             console.info("screencap", "preview grabbed: " + result.url);
                             frozen.source = result.url;
                             readyTimer.start();
@@ -209,7 +248,8 @@ Scope {
                     }
 
                     onStatusChanged: {
-                        if (status === Image.Ready) fadeIn.start();
+                        if (status === Image.Ready)
+                            fadeIn.start();
                     }
 
                     NumberAnimation on opacity {
@@ -286,7 +326,9 @@ Scope {
                             opacity: win.processing ? 0.6 : 0
 
                             Behavior on opacity {
-                                NumberAnimation { duration: 200 }
+                                NumberAnimation {
+                                    duration: 200
+                                }
                             }
 
                             LoadingIcon {
@@ -326,7 +368,7 @@ Scope {
                             color: Appearance.m3colors.m3onSurface
                             property real scaleX: container.width / win.width
                             property real scaleY: container.height / win.height
-                            text: Math.floor(selection.sx/scaleX) + "," + Math.floor(selection.sy/scaleY) + " " + Math.floor(selection.w/scaleX) + "x" + Math.floor(selection.h/scaleY)
+                            text: Math.floor(selection.sx / scaleX) + "," + Math.floor(selection.sy / scaleY) + " " + Math.floor(selection.w / scaleX) + "x" + Math.floor(selection.h / scaleY)
                         }
                     }
 
@@ -353,7 +395,8 @@ Scope {
                         property real h: hp * parent.height
 
                         onPressed: mouse => {
-                            if (!win.ready) return;
+                            if (!win.ready)
+                                return;
                             x1 = Math.max(0, Math.min(mouse.x, width));
                             y1 = Math.max(0, Math.min(mouse.y, height));
                             x2 = x1;
@@ -374,7 +417,8 @@ Scope {
                         }
 
                         onReleased: mouse => {
-                            if (!selecting) return;
+                            if (!selecting)
+                                return;
 
                             x2 = Math.max(0, Math.min(mouse.x, width));
                             y2 = Math.max(0, Math.min(mouse.y, height));
@@ -388,12 +432,7 @@ Scope {
                                 wp = Math.abs(x2 - x1) / width;
                                 hp = Math.abs(y2 - y1) / height;
 
-                                root.selectedRegion = Qt.rect(
-                                    Math.min(x1, x2) * win.screen.width / width,
-                                    Math.min(y1, y2) * win.screen.height / height,
-                                    Math.abs(x2 - x1) * win.screen.width / width,
-                                    Math.abs(y2 - y1) * win.screen.height / height
-                                );
+                                root.selectedRegion = Qt.rect(Math.min(x1, x2) * win.screen.width / width, Math.min(y1, y2) * win.screen.height / height, Math.abs(x2 - x1) * win.screen.width / width, Math.abs(y2 - y1) * win.screen.height / height);
 
                                 win.captureRegion();
                             } else {
@@ -404,7 +443,8 @@ Scope {
 
                     Repeater {
                         model: {
-                            if (!win.windowMode || !win.ready) return [];
+                            if (!win.windowMode || !win.ready)
+                                return [];
                             var ws = Hyprland.focusedMonitor?.activeWorkspace;
                             return ws?.toplevels ? ws.toplevels.values : [];
                         }
@@ -414,8 +454,8 @@ Scope {
                             property var w: modelData?.lastIpcObject
                             visible: w?.at && w?.size
 
-                            property real barX: 0
-                            property real barY: 0
+                            property real barX: win.captureOffsetX
+                            property real barY: win.captureOffsetY
                             property real sx: container.width / (win.screen.width - barX)
                             property real sy: container.height / (win.screen.height - barY)
 
@@ -432,7 +472,9 @@ Scope {
                                 border.width: hover.containsMouse ? 3 : 0
                                 radius: Metrics.radius(8)
                                 Behavior on border.width {
-                                    NumberAnimation { duration: Metrics.chronoDuration(150) }
+                                    NumberAnimation {
+                                        duration: Metrics.chronoDuration(150)
+                                    }
                                 }
                             }
 
@@ -442,7 +484,9 @@ Scope {
                                 opacity: hover.containsMouse ? 0.15 : 0
                                 radius: Metrics.radius(8)
                                 Behavior on opacity {
-                                    NumberAnimation { duration: Metrics.chronoDuration(150) }
+                                    NumberAnimation {
+                                        duration: Metrics.chronoDuration(150)
+                                    }
                                 }
                             }
 
@@ -524,7 +568,14 @@ Scope {
                         }
 
                         onFinished: {
-                            root.active = false;
+                            if (win.deferredCommand !== "") {
+                                Quickshell.execDetached({
+                                    command: ["sh", "-lc", win.deferredCommand]
+                                });
+                                win.deferredCommand = "";
+                            }
+
+                            Globals.states.screenCaptureOpen = false;
                             if (win.savedSuccess) {
                                 Quickshell.execDetached({
                                     command: ["notify-send", "Screenshot saved", win.savedPath.split("/").pop() + " (copied)"]
@@ -544,7 +595,7 @@ Scope {
                     anchors.bottomMargin: Metrics.margin(30)
                     width: row.width + 20
                     height: row.height + 20
-		            visible: true
+                    visible: true
 
                     Rectangle {
                         anchors.fill: parent
@@ -592,13 +643,15 @@ Scope {
             }
 
             onVisibleChanged: {
-                if (visible) grab.active = true
+                if (visible)
+                    grab.active = true;
             }
 
             Connections {
                 target: grab
                 function onActiveChanged() {
-                    if (!grab.active && !win.closing) win.close();
+                    if (!grab.active && !win.closing)
+                        win.close();
                 }
             }
         }

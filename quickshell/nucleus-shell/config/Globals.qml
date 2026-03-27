@@ -1,6 +1,6 @@
-import QtQuick
 pragma Singleton
 pragma ComponentBehavior: Bound
+import QtQuick
 import Quickshell
 
 Singleton {
@@ -18,6 +18,6 @@ Singleton {
     states: QtObject {
         property bool settingsOpen: false
         property bool intelligenceWindowOpen: false
+        property bool screenCaptureOpen: false
     }
-
 }

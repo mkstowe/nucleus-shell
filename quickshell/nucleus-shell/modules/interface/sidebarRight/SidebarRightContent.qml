@@ -56,7 +56,9 @@ Item {
                 }
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             Row {
                 spacing: Metrics.spacing(6)
@@ -81,7 +83,7 @@ Item {
                         tooltipText: "Take a screenshot"
 
                         onButtonClicked: {
-                            Quickshell.execDetached(["nucleus", "ipc", "call", "screen", "capture"])
+                            Globals.states.screenCaptureOpen = true;
                             Globals.visiblility.sidebarRight = false;
                         }
                     }
@@ -105,7 +107,7 @@ Item {
                         tooltipText: "Reload Nucleus Shell"
 
                         onButtonClicked: {
-                            Quickshell.execDetached(["nucleus", "run", "--reload"])
+                            Quickshell.execDetached(["nucleus", "run", "--reload"]);
                         }
                     }
                 }
@@ -127,8 +129,8 @@ Item {
                         iconSize: Metrics.iconSize("hugeass") + 2
                         tooltipText: "Open Settings"
                         onButtonClicked: {
-                            Globals.visiblility.sidebarRight = false
-                            Globals.states.settingsOpen = true
+                            Globals.visiblility.sidebarRight = false;
+                            Globals.states.settingsOpen = true;
                         }
                     }
                 }
@@ -151,8 +153,8 @@ Item {
                         tooltipText: "Open PowerMenu"
 
                         onButtonClicked: {
-                            Globals.visiblility.sidebarRight = false
-                            Globals.visiblility.powermenu = true
+                            Globals.visiblility.sidebarRight = false;
+                            Globals.visiblility.powermenu = true;
                         }
                     }
                 }
@@ -220,7 +222,7 @@ Item {
                 Layout.topMargin: Metrics.margin(5)
                 Layout.bottomMargin: Metrics.margin(5)
             }
-            
+
             NotifModal {
                 Layout.preferredHeight: (Config.runtime.bar.position === "left" || Config.runtime.bar.position === "right") ? 480 : 470
             }
