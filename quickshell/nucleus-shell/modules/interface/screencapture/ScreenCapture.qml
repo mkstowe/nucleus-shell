@@ -49,8 +49,13 @@ Scope {
             property bool closing: false
             property bool processing: false
             property bool windowMode: false
+            property bool delayedCaptureEnabled: false
+            property int captureDelaySeconds: 5
+            property bool countdownActive: false
+            property int countdownRemaining: 0
             property string savedPath: ""
             property bool savedSuccess: false
+            property string pendingCommand: ""
             property string deferredCommand: ""
             property var focusedMonitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.focused) ?? null
             property string displayName: screen?.name ?? focusedMonitorInfo?.name ?? ""
@@ -77,35 +82,81 @@ Scope {
             function close() {
                 if (closing)
                     return;
+                if (countdownActive)
+                    cancelPendingCapture();
                 closing = true;
                 closeAnim.start();
             }
 
-            function captureFullscreen() {
+            function cancelPendingCapture() {
+                countdownActive = false;
+                countdownRemaining = 0;
+                pendingCommand = "";
+                deferredCommand = "";
+                processing = false;
+                savedPath = "";
+                savedSuccess = false;
+                countdownTimer.stop();
+            }
+
+            function finishScheduledCapture() {
+                countdownActive = false;
+                countdownRemaining = 0;
+                deferredCommand = "sleep 0.1 && " + pendingCommand;
+                pendingCommand = "";
+                win.close();
+            }
+
+            function scheduleCapture(command) {
+                if (win.delayedCaptureEnabled) {
+                    win.pendingCommand = command;
+                    win.countdownRemaining = win.captureDelaySeconds;
+                    win.countdownActive = true;
+                    countdownTimer.restart();
+                    return;
+                }
+
+                win.deferredCommand = "sleep 0.1 && " + command;
+                win.close();
+            }
+
+            function queueCapture(pathSuffix, commandFactory) {
+                if (win.processing)
+                    return;
+
                 win.processing = true;
                 const ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
-                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + ".png";
-                win.deferredCommand = "sleep 0.1 && " + "grim -o '" + win.displayName + "' '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'";
+                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + pathSuffix + ".png";
                 win.savedSuccess = true;
-                win.close();
+                win.scheduleCapture(commandFactory());
+            }
+
+            function captureFullscreen() {
+                win.queueCapture("", () => "grim -o '" + win.displayName + "' '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'");
             }
 
             function captureWindow(rect) {
-                win.processing = true;
-                const ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
-                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + "_window.png";
-                win.deferredCommand = "sleep 0.1 && " + "grim -g '" + Math.floor(rect.x) + "," + Math.floor(rect.y) + " " + Math.floor(rect.width) + "x" + Math.floor(rect.height) + "' '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'";
-                win.savedSuccess = true;
-                win.close();
+                win.queueCapture("_window", () => "grim -g '" + Math.floor(rect.x) + "," + Math.floor(rect.y) + " " + Math.floor(rect.width) + "x" + Math.floor(rect.height) + "' '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'");
             }
 
             function captureRegion() {
-                win.processing = true;
-                const ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
-                win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + "_region.png";
-                win.deferredCommand = "sleep 0.1 && " + "selection=$(slurp -d" + " -b '" + win.slurpBackgroundColor + "'" + " -c '" + win.slurpBorderColor + "'" + " -s '" + win.slurpSelectionColor + "'" + " -B '" + win.slurpBoxColor + "'" + " -F '" + win.slurpFontFamily + "'" + " -w 2) && [ -n \"$selection\" ] && " + "grim -g \"$selection\" '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'";
-                win.savedSuccess = true;
-                win.close();
+                win.queueCapture("_region", () => "selection=$(slurp -d" + " -b '" + win.slurpBackgroundColor + "'" + " -c '" + win.slurpBorderColor + "'" + " -s '" + win.slurpSelectionColor + "'" + " -B '" + win.slurpBoxColor + "'" + " -F '" + win.slurpFontFamily + "'" + " -w 2) && [ -n \"$selection\" ] && " + "grim -g \"$selection\" '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'");
+            }
+
+            Timer {
+                id: countdownTimer
+                interval: 1000
+                repeat: true
+
+                onTriggered: {
+                    if (win.countdownRemaining <= 1) {
+                        stop();
+                        win.finishScheduledCapture();
+                        return;
+                    }
+
+                    win.countdownRemaining -= 1;
+                }
             }
 
             Item {
@@ -114,6 +165,9 @@ Scope {
 
                 Keys.onEscapePressed: win.close()
                 Keys.onPressed: event => {
+                    if (win.processing && event.key !== Qt.Key_Escape)
+                        return;
+
                     if (event.key === Qt.Key_F) {
                         win.captureFullscreen();
                         event.accepted = true;
@@ -157,7 +211,7 @@ Scope {
 
                 MouseArea {
                     anchors.fill: parent
-                    enabled: !win.windowMode
+                    enabled: !win.windowMode && !win.countdownActive
 
                     onPressed: mouse => {
                         mouse.accepted = true;
@@ -217,10 +271,51 @@ Scope {
                             anchors.fill: parent
                             hoverEnabled: true
                             cursorShape: Qt.PointingHandCursor
+                            enabled: !win.countdownActive
 
                             onClicked: {
                                 win.captureWindow(Qt.rect(w.at[0], w.at[1], w.size[0], w.size[1]));
                             }
+                        }
+                    }
+                }
+
+                Rectangle {
+                    anchors.centerIn: parent
+                    visible: win.countdownActive
+                    width: Math.max(countdownColumn.implicitWidth + Metrics.margin(40), 220)
+                    height: countdownColumn.implicitHeight + Metrics.margin(32)
+                    radius: Metrics.radius("xlarge")
+                    color: Appearance.m3colors.m3surface
+                    border.color: Appearance.m3colors.m3outlineVariant
+                    border.width: 1
+                    z: 3000
+
+                    Column {
+                        id: countdownColumn
+                        anchors.centerIn: parent
+                        spacing: Metrics.margin(8)
+
+                        StyledText {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "Capturing in"
+                            color: Appearance.m3colors.m3onSurfaceVariant
+                            font.pixelSize: Metrics.fontSize("large")
+                        }
+
+                        StyledText {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: String(win.countdownRemaining)
+                            color: Appearance.m3colors.m3primary
+                            font.family: Metrics.fontFamily("title")
+                            font.pixelSize: Metrics.fontSize("hugeass") + 18
+                        }
+
+                        StyledText {
+                            anchors.horizontalCenter: parent.horizontalCenter
+                            text: "Press Escape to cancel"
+                            color: Appearance.m3colors.m3onSurfaceVariant
+                            font.pixelSize: Metrics.fontSize("small")
                         }
                     }
                 }
@@ -276,9 +371,27 @@ Scope {
                     anchors.centerIn: parent
 
                     StyledButton {
+                        icon: "timer"
+                        checkable: true
+                        checked: win.delayedCaptureEnabled
+                        text: win.delayedCaptureEnabled ? "Delay 5s" : "No delay"
+                        tooltipText: "Wait 5 seconds before taking the screenshot"
+                        enabled: !win.processing
+                        onToggled: checked => win.delayedCaptureEnabled = checked
+                    }
+
+                    Rectangle {
+                        Layout.fillHeight: true
+                        width: 2
+                        color: Appearance.m3colors.m3onSurfaceVariant
+                        opacity: 0.2
+                    }
+
+                    StyledButton {
                         icon: "fullscreen"
                         text: "Full screen"
                         tooltipText: "Capture the whole screen [F]"
+                        enabled: !win.processing
                         onClicked: win.captureFullscreen()
                     }
 
@@ -293,6 +406,7 @@ Scope {
                         icon: "screenshot_region"
                         text: "Region"
                         tooltipText: "Select a region [R]"
+                        enabled: !win.processing
                         onClicked: win.captureRegion()
                     }
 
@@ -309,6 +423,7 @@ Scope {
                         checked: win.windowMode
                         text: "Window"
                         tooltipText: "Hover and click a window [W]"
+                        enabled: !win.processing
                         onClicked: win.windowMode = !win.windowMode
                     }
 
