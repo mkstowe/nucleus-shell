@@ -15,17 +15,15 @@ ContentMenu {
 
     ContentCard {
         id: monitorSelectorCard
-        
-        StyledText { 
+
+        StyledText {
             text: "Monitor Bar Configuration"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
         StyledText {
-            text: (Config.runtime.monitors?.[monitorSelector.model[monitorSelector.currentIndex]]?.bar)
-                ? "This monitor has its own bar configuration."
-                : "This monitor currently uses the global bar."
+            text: (Config.runtime.monitors?.[monitorSelector.model[monitorSelector.currentIndex]]?.bar) ? "This monitor has its own bar configuration." : "This monitor currently uses the global bar."
             wrapMode: Text.WordWrap
         }
 
@@ -40,7 +38,9 @@ ContentMenu {
                 onCurrentIndexChanged: monitorSelectorCard.updateMonitorProperties()
             }
 
-            Item { Layout.fillWidth: true }
+            Item {
+                Layout.fillWidth: true
+            }
 
             StyledButton {
                 id: createButton
@@ -48,11 +48,13 @@ ContentMenu {
                 text: "Override Bar: (" + monitorSelector.model[monitorSelector.currentIndex] + ")"
                 Layout.preferredWidth: 280
                 onClicked: {
-                    const monitorName = monitorSelector.model[monitorSelector.currentIndex]
-                    if (!monitorName) return
-                    if (!Config.runtime.monitors) Config.runtime.monitors = {}
+                    const monitorName = monitorSelector.model[monitorSelector.currentIndex];
+                    if (!monitorName)
+                        return;
+                    if (!Config.runtime.monitors)
+                        Config.runtime.monitors = {};
                     if (!Config.runtime.monitors[monitorName])
-                        Config.runtime.monitors[monitorName] = {}
+                        Config.runtime.monitors[monitorName] = {};
 
                     const defaultBar = {
                         density: 50,
@@ -65,27 +67,32 @@ ContentMenu {
                             height: 34,
                             paddingColor: "#1f1f1f",
                             radius: 17,
-                            statusIcons: { 
-                                bluetoothStatusEnabled: true, 
-                                enabled: true, 
-                                networkStatusEnabled: true 
+                            systemUsage: {
+                                cpuStatsEnabled: true,
+                                enabled: true,
+                                memoryStatsEnabled: true,
+                                tempStatsEnabled: true
                             },
-                            systemUsage: { 
-                                cpuStatsEnabled: true, 
-                                enabled: true, 
-                                memoryStatsEnabled: true, 
-                                tempStatsEnabled: true 
+                            workspaces: {
+                                enabled: true
                             },
-                            workspaces: { 
-                                enabled: true 
+                            clock: {
+                                enabled: true
+                            },
+                            mediaPlayer: {
+                                enabled: true
+                            },
+                            sidebars: {
+                                leftSidebarToggleEnabled: true,
+                                rightSidebarToggleEnabled: true
                             }
                         },
                         position: "top",
                         radius: 23
-                    }
+                    };
 
-                    Config.updateKey("monitors." + monitorName + ".bar", defaultBar)
-                    monitorSelectorCard.updateMonitorProperties()
+                    Config.updateKey("monitors." + monitorName + ".bar", defaultBar);
+                    monitorSelectorCard.updateMonitorProperties();
                 }
             }
 
@@ -96,40 +103,41 @@ ContentMenu {
                 secondary: true
                 Layout.preferredWidth: 280
                 onClicked: {
-                    const monitorName = monitorSelector.model[monitorSelector.currentIndex]
-                    if (!monitorName) return
-                    Config.updateKey("monitors." + monitorName + ".bar", undefined)
-                    monitorSelectorCard.updateMonitorProperties()
+                    const monitorName = monitorSelector.model[monitorSelector.currentIndex];
+                    if (!monitorName)
+                        return;
+                    Config.updateKey("monitors." + monitorName + ".bar", undefined);
+                    monitorSelectorCard.updateMonitorProperties();
                 }
             }
         }
 
         function updateMonitorProperties() {
-            const monitorName = monitorSelector.model[monitorSelector.currentIndex]
-            const monitorBar = Config.runtime.monitors?.[monitorName]?.bar
-            barKey = monitorBar ? "monitors." + monitorName + ".bar" : "bar"
+            const monitorName = monitorSelector.model[monitorSelector.currentIndex];
+            const monitorBar = Config.runtime.monitors?.[monitorName]?.bar;
+            barKey = monitorBar ? "monitors." + monitorName + ".bar" : "bar";
 
-            createButton.enabled = !monitorBar
-            deleteButton.enabled = !!monitorBar
+            createButton.enabled = !monitorBar;
+            deleteButton.enabled = !!monitorBar;
 
-            monitorSelector.model = Xrandr.monitors.map(m => m.name)
-            monitorSelector.currentIndex = Xrandr.monitors.findIndex(m => m.name === monitorName)
+            monitorSelector.model = Xrandr.monitors.map(m => m.name);
+            monitorSelector.currentIndex = Xrandr.monitors.findIndex(m => m.name === monitorName);
         }
     }
 
     ContentCard {
-        StyledText { 
+        StyledText {
             text: "Bar"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
         ColumnLayout {
-            StyledText { 
+            StyledText {
                 text: "Position"
                 font.pixelSize: Metrics.fontSize(16)
             }
-            
+
             RowLayout {
                 spacing: Metrics.spacing(8)
                 Repeater {
@@ -149,57 +157,57 @@ ContentMenu {
             }
         }
 
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Enabled"
             description: "Toggle the bar visibility on/off"
-            prefField: barKey + ".enabled" 
+            prefField: barKey + ".enabled"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Floating Bar"
             description: "Make the bar float above other windows instead of being part of the desktop"
-            prefField: barKey + ".floating" 
+            prefField: barKey + ".floating"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Goth Corners"
             description: "Apply gothic-style corner cutouts to the bar"
-            prefField: barKey + ".gothCorners" 
+            prefField: barKey + ".gothCorners"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Merged Layout"
             description: "Merge all modules into a single continuous layout"
-            prefField: barKey + ".merged" 
+            prefField: barKey + ".merged"
         }
     }
 
     ContentCard {
-        StyledText { 
+        StyledText {
             text: "Bar Rounding & Size"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
-        NumberStepper { 
+        NumberStepper {
             label: "Bar Density"
             prefField: barKey + ".density"
             description: "Modify the bar's density"
             minimum: 40
             maximum: 128
         }
-        NumberStepper { 
+        NumberStepper {
             label: "Bar Radius"
             prefField: barKey + ".radius"
             description: "Modify the bar's radius"
             minimum: 10
             maximum: 128
         }
-        NumberStepper { 
+        NumberStepper {
             label: "Module Container Radius"
             prefField: barKey + ".modules.radius"
             description: "Modify the bar's module.radius"
             minimum: 10
             maximum: 128
         }
-        NumberStepper { 
+        NumberStepper {
             label: "Module Height"
             prefField: barKey + ".modules.height"
             description: "Modify the bar's module.height"
@@ -209,67 +217,85 @@ ContentMenu {
     }
 
     ContentCard {
-        StyledText { 
+        StyledText {
             text: "Bar Modules"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
-        StyledText { 
+        StyledText {
+            text: "Sidebar Toggles"
+            font.pixelSize: Metrics.fontSize(18)
+            font.bold: true
+        }
+        StyledSwitchOption {
+            title: "Enabled"
+            description: "Show left sidebar toggle"
+            prefField: barKey + ".modules.sidebars.leftSidebarToggleEnabled"
+        }
+        StyledSwitchOption {
+            title: "Enabled"
+            description: "Show right sidebar toggle"
+            prefField: barKey + ".modules.sidebars.rightSidebarToggleEnabled"
+        }
+
+        StyledText {
             text: "Workspaces"
             font.pixelSize: Metrics.fontSize(18)
             font.bold: true
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Enabled"
             description: "Show workspace indicator module"
-            prefField: barKey + ".modules.workspaces.enabled" 
+            prefField: barKey + ".modules.workspaces.enabled"
         }
-        StyledText { 
-            text: "Status Icons"
+
+        StyledText {
+            text: "Clock"
             font.pixelSize: Metrics.fontSize(18)
             font.bold: true
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Enabled"
-            description: "Show status icons module (wifi, bluetooth)"
-            prefField: barKey + ".modules.statusIcons.enabled" 
-        }
-        StyledSwitchOption { 
-            title: "Show Wifi Status"
-            description: "Display wifi connection status and signal strength"
-            prefField: barKey + ".modules.statusIcons.networkStatusEnabled" 
-        }
-        StyledSwitchOption { 
-            title: "Show Bluetooth Status"
-            description: "Display bluetooth connection status"
-            prefField: barKey + ".modules.statusIcons.bluetoothStatusEnabled" 
+            description: "Show clock module"
+            prefField: barKey + ".modules.clock.enabled"
         }
 
-        StyledText { 
+        StyledText {
+            text: "Media"
+            font.pixelSize: Metrics.fontSize(18)
+            font.bold: true
+        }
+        StyledSwitchOption {
+            title: "Enabled"
+            description: "Show media module"
+            prefField: barKey + ".modules.mediaPlayer.enabled"
+        }
+
+        StyledText {
             text: "System Stats"
             font.pixelSize: Metrics.fontSize(18)
             font.bold: true
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Enabled"
             description: "Show system resource monitoring module"
-            prefField: barKey + ".modules.systemUsage.enabled" 
+            prefField: barKey + ".modules.systemUsage.enabled"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Show Cpu Usage Stats"
             description: "Display CPU usage percentage and load"
-            prefField: barKey + ".modules.systemUsage.cpuStatsEnabled" 
+            prefField: barKey + ".modules.systemUsage.cpuStatsEnabled"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Show Memory Usage Stats"
             description: "Display RAM usage and available memory"
-            prefField: barKey + ".modules.systemUsage.memoryStatsEnabled" 
+            prefField: barKey + ".modules.systemUsage.memoryStatsEnabled"
         }
-        StyledSwitchOption { 
+        StyledSwitchOption {
             title: "Show Cpu Temperature Stats"
             description: "Display CPU temperature readings"
-            prefField: barKey + ".modules.systemUsage.tempStatsEnabled" 
+            prefField: barKey + ".modules.systemUsage.tempStatsEnabled"
         }
     }
 }

@@ -15,50 +15,61 @@ Singleton {
     property bool blockWrites: false
 
     function updateKey(nestedKey, value) {
-        let keys = nestedKey.split(".")
-        let obj = root.runtime
+        let keys = nestedKey.split(".");
+        let obj = root.runtime;
         if (!obj) {
-            console.warn("Config.updateKey: adapter not available for key", nestedKey)
-            return
+            console.warn("Config.updateKey: adapter not available for key", nestedKey);
+            return;
         }
 
         for (let i = 0; i < keys.length - 1; ++i) {
-            let k = keys[i]
+            let k = keys[i];
             if (obj[k] === undefined || obj[k] === null || typeof obj[k] !== "object") {
-                obj[k] = {}  // Use Plain JS for serialization
+                obj[k] = {};  // Use Plain JS for serialization
             }
-            obj = obj[k]
+            obj = obj[k];
             if (!obj) {
-                console.warn("Config.updateKey: failed to resolve", k)
-                return
+                console.warn("Config.updateKey: failed to resolve", k);
+                return;
             }
         }
 
-        let convertedValue = value
+        let convertedValue = value;
         if (typeof value === "string") {
-            let trimmed = value.trim()
+            let trimmed = value.trim();
             if (trimmed === "true" || trimmed === "false" || (!isNaN(Number(trimmed)) && trimmed !== "")) {
                 try {
-                    convertedValue = JSON.parse(trimmed)
+                    convertedValue = JSON.parse(trimmed);
                 } catch (e) {
-                    convertedValue = value
+                    convertedValue = value;
                 }
             }
         }
 
-        obj[keys[keys.length - 1]] = convertedValue
-        configFileView.adapterUpdated()
+        obj[keys[keys.length - 1]] = convertedValue;
+        configFileView.adapterUpdated();
     }
 
-    Timer { id: fileReloadTimer; interval: root.readWriteDelay; repeat: false; onTriggered: configFileView.reload() }
-    Timer { id: fileWriteTimer; interval: root.readWriteDelay; repeat: false; onTriggered: configFileView.writeAdapter() }
+    Timer {
+        id: fileReloadTimer
+        interval: root.readWriteDelay
+        repeat: false
+        onTriggered: configFileView.reload()
+    }
+    Timer {
+        id: fileWriteTimer
+        interval: root.readWriteDelay
+        repeat: false
+        onTriggered: configFileView.writeAdapter()
+    }
 
-    Timer { // Used to output all log/debug to the terminal
+    Timer {
+        // Used to output all log/debug to the terminal
         interval: 1200
         running: true
         repeat: false
         onTriggered: {
-            console.log("Detected Compositor:", Compositor.detectedCompositor)
+            console.log("Detected Compositor:", Compositor.detectedCompositor);
         }
     }
 
@@ -69,9 +80,12 @@ Singleton {
         blockWrites: root.blockWrites
         onFileChanged: fileReloadTimer.restart()
         onAdapterUpdated: fileWriteTimer.restart()
-        onLoaded: { root.initialized = true }
+        onLoaded: {
+            root.initialized = true;
+        }
         onLoadFailed: error => {
-            if (error == FileViewError.FileNotFound) writeAdapter()
+            if (error == FileViewError.FileNotFound)
+                writeAdapter();
         }
 
         JsonAdapter {
@@ -81,11 +95,19 @@ Singleton {
             property JsonObject appearance: JsonObject {
                 property string theme: "dark"
                 property bool tintIcons: false
-                property JsonObject animations: JsonObject { property bool enabled: true; property double durationScale: 1 }
-                property JsonObject transparency: JsonObject { property bool enabled: false; property double alpha: 0.2 }
-                property JsonObject rounding: JsonObject { property double factor: 1 }
-                property JsonObject font: JsonObject { 
-                    property double scale: 1 
+                property JsonObject animations: JsonObject {
+                    property bool enabled: true
+                    property double durationScale: 1
+                }
+                property JsonObject transparency: JsonObject {
+                    property bool enabled: false
+                    property double alpha: 0.2
+                }
+                property JsonObject rounding: JsonObject {
+                    property double factor: 1
+                }
+                property JsonObject font: JsonObject {
+                    property double scale: 1
                     property JsonObject families: JsonObject {
                         property string main: "JetBrains Mono"
                         property string title: "Gabarito"
@@ -103,10 +125,10 @@ Singleton {
                     property bool runMatugenUserWide: false
                 }
                 property JsonObject background: JsonObject {
-                    property bool enabled: true 
+                    property bool enabled: true
                     property url defaultPath: Directories.defaultsPath + "/default.jpg"
                     property JsonObject parallax: JsonObject {
-                        property bool enabled: true 
+                        property bool enabled: true
                         property bool enableSidebarLeft: true
                         property bool enableSidebarRight: true
                         property real zoom: 1.10
@@ -114,8 +136,8 @@ Singleton {
                 }
             }
 
-            property JsonObject misc: JsonObject { 
-                property url pfp: Quickshell.env("HOME") + "/.face.icon" 
+            property JsonObject misc: JsonObject {
+                property url pfp: Quickshell.env("HOME") + "/.face.icon"
                 property bool useMergedSidebarLayout: false // use merged sidebar layout when bar is merged
                 property JsonObject intelligence: JsonObject {
                     property bool enabled: true
@@ -123,9 +145,8 @@ Singleton {
                 }
             }
 
-            
             property JsonObject notifications: JsonObject {
-                property bool enabled: true 
+                property bool enabled: true
                 property bool doNotDisturb: false
                 property string position: "center"
             }
@@ -134,8 +155,8 @@ Singleton {
                 property string qsVersion: "0.0.0"
             }
             property JsonObject overlays: JsonObject {
-                property bool enabled: true 
-                property bool volumeOverlayEnabled: true 
+                property bool enabled: true
+                property bool volumeOverlayEnabled: true
                 property string volumeOverlayPosition: "top"
             }
             property JsonObject launcher: JsonObject {
@@ -155,18 +176,23 @@ Singleton {
                     property color paddingColor: Appearance.m3colors.m3surfaceContainer
                     property int radius: Appearance.rounding.normal
                     property int height: 34
+                    property JsonObject sidebars: JsonObject {
+                        property bool leftSidebarToggleEnabled: true
+                        property bool rightSidebarToggleEnabled: true
+                    }
                     property JsonObject workspaces: JsonObject {
                         property bool enabled: true
                     }
-                    property JsonObject statusIcons: JsonObject {
+                    property JsonObject clock: JsonObject {
                         property bool enabled: true
-                        property bool networkStatusEnabled: true 
-                        property bool bluetoothStatusEnabled: true 
+                    }
+                    property JsonObject mediaPlayer: JsonObject {
+                        property bool enabled: true
                     }
                     property JsonObject systemUsage: JsonObject {
                         property bool enabled: true
-                        property bool cpuStatsEnabled: true 
-                        property bool memoryStatsEnabled: true 
+                        property bool cpuStatsEnabled: true
+                        property bool memoryStatsEnabled: true
                         property bool tempStatsEnabled: true
                     }
                 }

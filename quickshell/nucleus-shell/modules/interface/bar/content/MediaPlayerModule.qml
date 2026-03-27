@@ -12,31 +12,25 @@ import qs.services
 Item {
     id: mediaPlayer
 
-    property bool isVertical: (
-        ConfigResolver.bar(screen?.name ?? "").position === "left" ||
-        ConfigResolver.bar(screen?.name ?? "").position === "right"
-    )
+    property string displayName: ""
+    property bool isVertical: (ConfigResolver.bar(displayName).position === "left" || ConfigResolver.bar(displayName).position === "right")
 
+    visible: ConfigResolver.bar(displayName).modules.mediaPlayer.enabled
     Layout.alignment: Qt.AlignCenter | Qt.AlignVCenter
 
     implicitWidth: bgRect.implicitWidth
     implicitHeight: bgRect.implicitHeight
 
-
     Rectangle {
         id: bgRect
 
         color: Appearance.m3colors.m3paddingContainer
-        radius: ConfigResolver.bar(screen?.name ?? "").modules.radius *
-                Config.runtime.appearance.rounding.factor
+        radius: ConfigResolver.bar(displayName).modules.radius * Config.runtime.appearance.rounding.factor
 
-        implicitWidth: isVertical
-            ? row.implicitWidth + Metrics.margin("large") - 10
-            : row.implicitWidth + Metrics.margin("large")
+        implicitWidth: isVertical ? row.implicitWidth + Metrics.margin("large") - 10 : row.implicitWidth + Metrics.margin("large")
 
-        implicitHeight: ConfigResolver.bar(screen?.name ?? "").modules.height
+        implicitHeight: ConfigResolver.bar(displayName).modules.height
     }
-
 
     Row {
         id: row
@@ -44,13 +38,12 @@ Item {
         anchors.centerIn: parent
         spacing: Metrics.margin("small")
 
-
         ClippingRectangle {
             id: iconButton
 
             width: 24
             height: 24
-            radius: ConfigResolver.bar(screen?.name ?? "").modules.radius / 1.2
+            radius: ConfigResolver.bar(displayName).modules.radius / 1.2
 
             color: Appearance.colors.colLayer1Hover
             opacity: 0.9
@@ -58,10 +51,8 @@ Item {
             clip: true
             layer.enabled: true
 
-
             Item {
                 anchors.fill: parent
-
 
                 Image {
                     id: art
@@ -75,7 +66,6 @@ Item {
                     mipmap: true
                 }
 
-
                 MaterialSymbol {
                     anchors.centerIn: parent
 
@@ -83,12 +73,9 @@ Item {
                     icon: "music_note"
 
                     iconSize: 18
-                    color: Config.runtime.appearance.theme === "dark"
-                        ? "#b1a4a4"
-                        : "grey"
+                    color: Config.runtime.appearance.theme === "dark" ? "#b1a4a4" : "grey"
                 }
             }
-
 
             MouseArea {
                 anchors.fill: parent
@@ -100,7 +87,6 @@ Item {
                 onExited: iconButton.opacity = 0.9
             }
 
-
             RotationAnimation on rotation {
                 from: 0
                 to: 360
@@ -108,11 +94,9 @@ Item {
                 duration: Metrics.chronoDuration(4000)
                 loops: Animation.Infinite
 
-                running: Mpris.isPlaying &&
-                         Config.runtime.appearance.animations.enabled
+                running: Mpris.isPlaying && Config.runtime.appearance.animations.enabled
             }
         }
-
 
         StyledText {
             id: textItem

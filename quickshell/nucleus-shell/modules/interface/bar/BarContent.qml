@@ -7,6 +7,7 @@ import qs.services
 import qs.modules.components
 
 Item {
+    id: root
     property string displayName: screen?.name ?? ""
     property bool isHorizontal: (ConfigResolver.bar(displayName).position === "top" || ConfigResolver.bar(displayName).position === "bottom")
 
@@ -16,7 +17,9 @@ Item {
         anchors.centerIn: parent
         spacing: Metrics.spacing(4)
 
-        WorkspaceModule {}
+        WorkspaceModule {
+            displayName: root.displayName
+        }
     }
 
     RowLayout {
@@ -29,6 +32,7 @@ Item {
         anchors.leftMargin: ConfigResolver.bar(displayName).density * 0.3
 
         ToggleModule {
+            visible: ConfigResolver.bar(root.displayName).modules.sidebars.leftSidebarToggleEnabled
             icon: "left_panel_open"
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3error
@@ -39,7 +43,9 @@ Item {
             }
         }
 
-        MediaPlayerModule {}
+        MediaPlayerModule {
+            displayName: root.displayName
+        }
     }
 
     RowLayout {
@@ -51,10 +57,15 @@ Item {
         spacing: Metrics.spacing(4)
         anchors.rightMargin: ConfigResolver.bar(displayName).density * 0.3
 
-        SystemUsageModule {}
-        ClockModule {}
+        SystemUsageModule {
+            displayName: root.displayName
+        }
+        ClockModule {
+            displayName: root.displayName
+        }
 
         ToggleModule {
+            visible: ConfigResolver.bar(root.displayName).modules.sidebars.rightSidebarToggleEnabled
             icon: "right_panel_open"
             iconSize: Metrics.iconSize(22)
             iconColor: Appearance.m3colors.m3primary
@@ -82,6 +93,7 @@ Item {
             rotation: 90
 
             ToggleModule {
+                visible: ConfigResolver.bar(root.displayName).modules.sidebars.leftSidebarToggleEnabled
                 icon: "menu"
                 iconSize: Metrics.iconSize(22)
                 iconColor: Appearance.m3colors.m3error
@@ -93,11 +105,11 @@ Item {
                 }
             }
 
-            SystemUsageModule {}
-            MediaPlayerModule {}
-
-            SystemTray {
-                rotation: 0
+            SystemUsageModule {
+                displayName: root.displayName
+            }
+            MediaPlayerModule {
+                displayName: root.displayName
             }
         }
     }
@@ -134,6 +146,7 @@ Item {
             rotation: 90
 
             ToggleModule {
+                visible: ConfigResolver.bar(root.displayName).modules.sidebars.rightSidebarToggleEnabled
                 icon: "right_panel_open"
                 iconSize: Metrics.iconSize(22)
                 iconColor: Appearance.m3colors.m3primary

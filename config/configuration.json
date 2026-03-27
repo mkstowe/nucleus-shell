@@ -50,13 +50,18 @@
         "margins": 16,
         "merged": false,
         "modules": {
+            "clock": {
+                "enabled": true
+            },
             "height": 34,
+            "mediaPlayer": {
+                "enabled": true
+            },
             "paddingColor": "#1f1f1f",
             "radius": 17,
-            "statusIcons": {
-                "bluetoothStatusEnabled": true,
-                "enabled": true,
-                "networkStatusEnabled": true
+            "sidebars": {
+                "leftSidebarToggleEnabled": true,
+                "rightSidebarToggleEnabled": true
             },
             "systemUsage": {
                 "cpuStatsEnabled": true,
@@ -84,6 +89,84 @@
         "useMergedSidebarLayout": false
     },
     "monitors": {
+        "DP-1": {
+            "bar": {
+                "density": 50,
+                "enabled": true,
+                "floating": false,
+                "gothCorners": true,
+                "margins": 16,
+                "merged": false,
+                "modules": {
+                    "clock": {
+                        "enabled": true
+                    },
+                    "height": 34,
+                    "mediaPlayer": {
+                        "enabled": true
+                    },
+                    "paddingColor": "#1f1f1f",
+                    "radius": 17,
+                    "sidebars": {
+                        "leftSidebarToggleEnabled": true,
+                        "rightSidebarToggleEnabled": true
+                    },
+                    "systemUsage": {
+                        "cpuStatsEnabled": true,
+                        "enabled": false,
+                        "memoryStatsEnabled": true,
+                        "tempStatsEnabled": true
+                    },
+                    "workspaces": {
+                        "enabled": true
+                    }
+                },
+                "position": "top",
+                "radius": 23
+            }
+        },
+        "HDMI-A-1": {
+            "bar": {
+                "density": 50,
+                "enabled": true,
+                "floating": false,
+                "gothCorners": true,
+                "margins": 16,
+                "merged": false,
+                "modules": {
+                    "clock": {
+                        "enabled": false
+                    },
+                    "height": 34,
+                    "mediaPlayer": {
+                        "enabled": false
+                    },
+                    "paddingColor": "#1f1f1f",
+                    "radius": 17,
+                    "sidebars": {
+                        "left": {
+                            "enabled": true
+                        },
+                        "leftSidebarToggleEnabled": false,
+                        "right": {
+                            "enabled": true
+                        },
+                        "rightSidebarToggleEnabled": false
+                    },
+                    "systemUsage": {
+                        "cpuStatsEnabled": true,
+                        "enabled": true,
+                        "memoryStatsEnabled": true,
+                        "tempStatsEnabled": true
+                    },
+                    "workspaces": {
+                        "enabled": true
+                    }
+                },
+                "position": "top",
+                "radius": 23
+            }
+        }
     },
     "notifications": {
         "doNotDisturb": false,
