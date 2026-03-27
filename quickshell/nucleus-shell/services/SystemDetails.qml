@@ -14,6 +14,9 @@ Singleton {
     property string kernelVersion: ""
     property string architecture: ""
     property string uptime: ""
+    property int pacmanUpdates: 0
+    property int aurUpdates: 0
+    property string packageUpdateSummary: "0 pacman | 0 AUR"
     property string qsVersion: ""
     property string swapUsage: "—"
     property real swapPercent: 0
@@ -84,6 +87,14 @@ Singleton {
     FileView { id: cpuStat; path: "/proc/stat" }
     FileView { id: memInfo; path: "/proc/meminfo" }
     FileView { id: uptimeFile; path: "/proc/uptime" }
+
+    Timer {
+        interval: 1800000
+        running: true
+        repeat: true
+
+        onTriggered: updateCheckProc.running = true
+    }
 
 
     Timer {
@@ -180,6 +191,37 @@ Singleton {
             swapProc.running = true
             keyboardLayoutProc.running = true
             loggedUsersProc.running = true
+        }
+    }
+
+    Process {
+        id: updateCheckProc
+        running: true
+        command: [
+            "sh", "-c",
+            "pacman_count=0; "
+            + "aur_count=0; "
+            + "if command -v checkupdates >/dev/null 2>&1; then "
+            + "pacman_count=$(checkupdates 2>/dev/null | wc -l); "
+            + "fi; "
+            + "if command -v paru >/dev/null 2>&1; then "
+            + "aur_count=$(paru -Qua 2>/dev/null | wc -l); "
+            + "elif command -v yay >/dev/null 2>&1; then "
+            + "aur_count=$(yay -Qua 2>/dev/null | wc -l); "
+            + "fi; "
+            + "printf '%s|%s\\n' \"$pacman_count\" \"$aur_count\""
+        ]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                const parts = text.trim().split("|")
+                const pacmanCount = parseInt(parts[0])
+                const aurCount = parseInt(parts[1])
+
+                root.pacmanUpdates = isNaN(pacmanCount) ? 0 : pacmanCount
+                root.aurUpdates = isNaN(aurCount) ? 0 : aurCount
+                root.packageUpdateSummary = `${root.pacmanUpdates} pacman | ${root.aurUpdates} AUR`
+            }
         }
     }
 

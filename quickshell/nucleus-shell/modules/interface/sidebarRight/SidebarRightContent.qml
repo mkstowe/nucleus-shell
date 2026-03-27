@@ -43,12 +43,7 @@ Item {
                     spacing: Metrics.spacing(8)
 
                     StyledText {
-                        text: SystemDetails.osIcon
-                        font.pixelSize: Metrics.fontSize("hugeass") + 6
-                    }
-
-                    StyledText {
-                        text: SystemDetails.uptime
+                        text: SystemDetails.packageUpdateSummary
                         font.pixelSize: Metrics.fontSize("large")
                         Layout.alignment: Qt.AlignBottom
                         Layout.bottomMargin: Metrics.margin(5)
@@ -86,30 +81,6 @@ Item {
                         onButtonClicked: {
                             Globals.states.screenCaptureOpen = true;
                             Globals.visiblility.sidebarRight = false;
-                        }
-                    }
-                }
-
-                StyledRect {
-                    id: reloadbtncontainer
-                    color: "transparent"
-                    radius: Metrics.radius("large")
-                    implicitHeight: reloadButton.height + Metrics.margin("tiny")
-                    implicitWidth: reloadButton.width + Metrics.margin("small")
-                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
-                    Layout.topMargin: Metrics.margin(10)
-                    Layout.leftMargin: Metrics.margin(15)
-
-                    MaterialSymbolButton {
-                        id: reloadButton
-                        icon: "refresh"
-                        anchors.centerIn: parent
-                        iconSize: Metrics.iconSize("hugeass") + 4
-                        tooltipText: "Reload Nucleus Shell"
-                        tooltipOffsetY: Metrics.margin(64)
-
-                        onButtonClicked: {
-                            Quickshell.execDetached(["nucleus", "run", "--reload"]);
                         }
                     }
                 }

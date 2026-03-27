@@ -27,7 +27,7 @@ Item {
             id: workspaceRow
 
             anchors.centerIn: parent
-            spacing: Metrics.spacing(10)
+            spacing: Metrics.spacing(2)
 
             Repeater {
                 model: workspaceIds
@@ -44,7 +44,7 @@ Item {
                         id: indicator
 
                         anchors.centerIn: parent
-                        width: focused ? 12 : 10
+                        width: focused ? 14 : 11
                         height: width
                         radius: width / 2
                         color: focused
