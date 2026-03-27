@@ -350,19 +350,10 @@ Scope {
                             anchors.centerIn: parent
                             spacing: Metrics.spacing(10)
 
-                            Column {
-                                spacing: Metrics.spacing(2)
-
-                                StyledText {
-                                    text: "Delay"
-                                    color: Appearance.m3colors.m3onSurface
-                                }
-
-                                StyledText {
-                                    text: win.delayedCaptureEnabled ? "Wait 5 seconds" : "Capture immediately"
-                                    color: Appearance.m3colors.m3onSurfaceVariant
-                                    font.pixelSize: Metrics.fontSize("small")
-                                }
+                            MaterialSymbol {
+                                icon: "timer"
+                                color: Appearance.m3colors.m3onSurface
+                                iconSize: Metrics.iconSize("hugeass")
                             }
 
                             StyledSwitch {
