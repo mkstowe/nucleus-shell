@@ -17,6 +17,15 @@ Scope {
     property rect selectedRegion: Qt.rect(0, 0, 0, 0)
     property string tempScreenshot: ""
 
+    function toSlurpColor(color, alphaSuffix) {
+        const raw = String(color);
+        if (raw.length === 7)
+            return raw + alphaSuffix;
+        if (raw.length === 9)
+            return "#" + raw.slice(3) + raw.slice(1, 3);
+        return raw;
+    }
+
     function openCapture() {
         if (root.active) {
             console.info("screencap", "already active");
@@ -45,6 +54,7 @@ Scope {
             property string savedPath: ""
             property bool savedSuccess: false
             property string deferredCommand: ""
+            property bool autoStartRegionPending: false
             property var focusedMonitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.focused) ?? null
             property string displayName: screen?.name ?? focusedMonitorInfo?.name ?? ""
             property var monitorInfo: (ShellServices.Hyprland.monitorsInfo ?? []).find(m => m?.name === displayName) ?? focusedMonitorInfo ?? null
@@ -55,6 +65,11 @@ Scope {
             property real logicalMonitorX: monitorInfo?.x ?? 0
             property real logicalMonitorY: monitorInfo?.y ?? 0
             property bool nativeRegionSelection: true
+            property string slurpBackgroundColor: root.toSlurpColor("#000000", "66")
+            property string slurpBorderColor: root.toSlurpColor(Appearance.m3colors.m3primary, "ff")
+            property string slurpSelectionColor: root.toSlurpColor(Appearance.m3colors.m3primary, "22")
+            property string slurpBoxColor: root.toSlurpColor(Appearance.m3colors.m3surface, "ee")
+            property string slurpFontFamily: Config.runtime.appearance.font.families.main
             property real captureOffsetX: {
                 if (!barConfig?.enabled || barConfig?.floating)
                     return 0;
@@ -187,14 +202,11 @@ Scope {
             }
 
             function captureRegion() {
+                autoStartRegionPending = false;
                 win.processing = true;
                 var ts = Qt.formatDateTime(new Date(), "yyyy-MM-dd_hh-mm-ss");
                 win.savedPath = Quickshell.env("HOME") + "/Pictures/screenshots/screenshot_" + ts + "_region.png";
-                win.deferredCommand =
-                    "sleep 0.1 && "
-                    + "selection=$(slurp) && [ -n \"$selection\" ] && "
-                    + "grim -g \"$selection\" '" + win.savedPath + "'"
-                    + " && wl-copy --type image/png < '" + win.savedPath + "'";
+                win.deferredCommand = "sleep 0.1 && " + "selection=$(slurp -d" + " -b '" + win.slurpBackgroundColor + "'" + " -c '" + win.slurpBorderColor + "'" + " -s '" + win.slurpSelectionColor + "'" + " -B '" + win.slurpBoxColor + "'" + " -F '" + win.slurpFontFamily + "'" + " -w 2) && [ -n \"$selection\" ] && " + "grim -g \"$selection\" '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'";
                 win.savedSuccess = true;
                 win.close();
             }
@@ -294,14 +306,13 @@ Scope {
                         fillMode: Image.PreserveAspectFit
                         smooth: true
                         cache: false
+                        visible: !win.windowMode
                     }
 
                     Item {
                         id: darkOverlay
                         anchors.fill: parent
-                        visible: !win.nativeRegionSelection
-                            && (selection.hasSelection || selection.selecting)
-                            && !win.windowMode
+                        visible: !win.nativeRegionSelection && (selection.hasSelection || selection.selecting) && !win.windowMode
 
                         Rectangle {
                             y: 0
@@ -364,9 +375,7 @@ Scope {
                         color: "transparent"
                         border.color: Appearance.m3colors.m3primary
                         border.width: 2
-                        visible: !win.nativeRegionSelection
-                            && (selection.selecting || selection.hasSelection)
-                            && !win.windowMode
+                        visible: !win.nativeRegionSelection && (selection.selecting || selection.hasSelection) && !win.windowMode
                     }
 
                     Rectangle {
@@ -387,10 +396,7 @@ Scope {
                             color: Appearance.m3colors.m3onSurface
                             property real scaleX: selection.previewWidth > 0 ? selection.availableWidth / selection.previewWidth : 1
                             property real scaleY: selection.previewHeight > 0 ? selection.availableHeight / selection.previewHeight : 1
-                            text: Math.floor((selection.sx - selection.previewX) * scaleX)
-                                + "," + Math.floor((selection.sy - selection.previewY) * scaleY)
-                                + " " + Math.floor(selection.w * scaleX)
-                                + "x" + Math.floor(selection.h * scaleY)
+                            text: Math.floor((selection.sx - selection.previewX) * scaleX) + "," + Math.floor((selection.sy - selection.previewY) * scaleY) + " " + Math.floor(selection.w * scaleX) + "x" + Math.floor(selection.h * scaleY)
                         }
                     }
 
@@ -425,6 +431,10 @@ Scope {
                         onPressed: mouse => {
                             if (!win.ready)
                                 return;
+                            if (win.nativeRegionSelection) {
+                                win.captureRegion();
+                                return;
+                            }
                             x1 = Math.max(previewX, Math.min(mouse.x, previewX + previewWidth));
                             y1 = Math.max(previewY, Math.min(mouse.y, previewY + previewHeight));
                             x2 = x1;
@@ -460,12 +470,7 @@ Scope {
                                 wp = Math.abs(x2 - x1) / previewWidth;
                                 hp = Math.abs(y2 - y1) / previewHeight;
 
-                                root.selectedRegion = Qt.rect(
-                                    win.logicalMonitorX + win.captureOffsetX + xp * availableWidth,
-                                    win.logicalMonitorY + win.captureOffsetY + yp * availableHeight,
-                                    Math.abs(x2 - x1) * availableWidth / previewWidth,
-                                    Math.abs(y2 - y1) * availableHeight / previewHeight
-                                );
+                                root.selectedRegion = Qt.rect(win.logicalMonitorX + win.captureOffsetX + xp * availableWidth, win.logicalMonitorY + win.captureOffsetY + yp * availableHeight, Math.abs(x2 - x1) * availableWidth / previewWidth, Math.abs(y2 - y1) * availableHeight / previewHeight);
 
                                 win.captureRegion();
                             } else {
@@ -487,15 +492,10 @@ Scope {
                             property var w: modelData?.lastIpcObject
                             visible: w?.at && w?.size
 
-                            property real barX: win.captureOffsetX
-                            property real barY: win.captureOffsetY
-                            property real sx: container.width / (win.screen.width - barX)
-                            property real sy: container.height / (win.screen.height - barY)
-
-                            x: visible ? (w.at[0] - barX) * sx : 0
-                            y: visible ? (w.at[1] - barY) * sy : 0
-                            width: visible ? w.size[0] * sx : 0
-                            height: visible ? w.size[1] * sy : 0
+                            x: visible ? w.at[0] - win.logicalMonitorX : 0
+                            y: visible ? w.at[1] - win.logicalMonitorY : 0
+                            width: visible ? w.size[0] : 0
+                            height: visible ? w.size[1] : 0
                             z: w?.floating ? (hover.containsMouse ? 1000 : 100) : (hover.containsMouse ? 50 : 0)
 
                             Rectangle {
@@ -536,7 +536,7 @@ Scope {
                     }
 
                     ParallelAnimation {
-                        running: win.visible && !win.closing && frozen.source != "" && win.windowMode
+                        running: false
 
                         NumberAnimation {
                             target: bg
@@ -655,7 +655,7 @@ Scope {
                         StyledButton {
                             icon: "screenshot_region"
                             text: "Region"
-                            tooltipText: "Select a region natively [R]"
+                            tooltipText: "Select a region [R]"
                             onClicked: win.captureRegion()
                         }
                         Rectangle {
