@@ -1,11 +1,9 @@
-import Qt5Compat.GraphicalEffects
 import QtQuick
 import QtQuick.Controls
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
 import Quickshell.Io
-import Quickshell.Services.Pipewire
 import Quickshell.Wayland
 import qs.config
 import qs.modules.functions
@@ -16,120 +14,147 @@ import qs.modules.components
 PanelWindow {
     id: powermenu
 
-    WlrLayershell.keyboardFocus: Globals.visiblility.powermenu
+    readonly property bool menuOpen: Config.initialized && Globals.visiblility.powermenu
+    property int selectedIndex: 0
+
+    function closeMenu() {
+        Globals.visiblility.powermenu = false;
+    }
 
     function togglepowermenu() {
-        Globals.visiblility.powermenu = !Globals.visiblility.powermenu; // Simple toggle logic kept in a function as it might have more things to it later on.
+        Globals.visiblility.powermenu = !Globals.visiblility.powermenu;
+    }
+
+    onVisibleChanged: {
+        if (visible)
+            selectedIndex = 0;
+    }
+
+    visible: menuOpen
+    focusable: menuOpen
+    aboveWindows: true
+    color: "transparent"
+    exclusiveZone: 0
+
+    anchors {
+        top: true
+        bottom: true
+        left: true
+        right: true
     }
 
     WlrLayershell.namespace: "nucleus:powermenu"
-    WlrLayershell.layer: WlrLayer.Top
-    visible: Config.initialized && Globals.visiblility.powermenu
-    color: "transparent"
-    exclusiveZone: 0
-    implicitWidth: DisplayMetrics.scaledWidth(0.25)
-    implicitHeight: DisplayMetrics.scaledWidth(0.168)
+    WlrLayershell.layer: WlrLayer.Overlay
+    WlrLayershell.keyboardFocus: menuOpen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
+    WlrLayershell.exclusionMode: ExclusionMode.Ignore
 
     HyprlandFocusGrab {
         id: grab
-
         active: Compositor.require("hyprland")
         windows: [powermenu]
     }
 
-    StyledRect {
-        id: container
+    FocusScope {
+        id: menuScope
+        property var buttons: [powerButton, rebootButton, lockButton, sleepButton, logoutButton]
 
-        color: Appearance.m3colors.m3background
-        radius: Metrics.radius("verylarge")
-        implicitWidth: powermenu.implicitWidth
         anchors.fill: parent
+        focus: true
 
-        FocusScope {
-            focus: true
-            anchors.fill: parent
-            Keys.onPressed: {
-                if (event.key === Qt.Key_Escape)
-                    Globals.visiblility.powermenu = false;
-
+        Keys.onPressed: event => {
+            if (event.key === Qt.Key_Escape) {
+                powermenu.closeMenu();
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Left || event.key === Qt.Key_Up) {
+                powermenu.selectedIndex = (powermenu.selectedIndex + menuScope.buttons.length - 1) % menuScope.buttons.length;
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Right || event.key === Qt.Key_Down) {
+                powermenu.selectedIndex = (powermenu.selectedIndex + 1) % menuScope.buttons.length;
+                event.accepted = true;
+            } else if (event.key === Qt.Key_Return || event.key === Qt.Key_Enter || event.key === Qt.Key_Space) {
+                const selectedButton = menuScope.buttons[powermenu.selectedIndex];
+                if (selectedButton)
+                    selectedButton.clicked();
+                event.accepted = true;
             }
-
-            Item {
-                id: content
-
-                anchors.margins: Metrics.radius(12)
-                anchors.topMargin: Metrics.radius(16)
-                anchors.leftMargin: Metrics.radius(18)
-                anchors.fill: parent
-
-                Grid {
-                    columns: 3
-                    rows: 3
-                    rowSpacing: Metrics.spacing(10)
-                    columnSpacing: Metrics.spacing(10)
-                    anchors.fill: parent
-
-                    PowerMenuButton {
-                        buttonIcon: "power_settings_new"
-                        onClicked: {
-                            Quickshell.execDetached(["poweroff"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                    PowerMenuButton {
-                        buttonIcon: "logout"
-                        onClicked: {
-                            Quickshell.execDetached(["hyprctl", "dispatch", "exit"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                    PowerMenuButton {
-                        buttonIcon: "sleep"
-                        onClicked: {
-                            Quickshell.execDetached(["systemctl", "suspend"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                    PowerMenuButton {
-                        buttonIcon: "lock"
-                        onClicked: {
-                            Quickshell.execDetached(["nucleus", "ipc", "call", "lockscreen", "lock"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                    PowerMenuButton {
-                        buttonIcon: "restart_alt"
-                        onClicked: {
-                            Quickshell.execDetached(["reboot"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                    PowerMenuButton {
-                        buttonIcon: "light_off"
-                        onClicked: {
-                            Quickshell.execDetached(["systemctl", "hibernate"]);
-                            Globals.visiblility.powermenu = false;
-                        }
-                    }
-
-                }
-
-                component Anim: NumberAnimation {
-                    running: Config.runtime.appearance.animations.enabled
-                    duration: Metrics.chronoDuration(400)
-                    easing.type: Easing.BezierSpline
-                    easing.bezierCurve: Appearance.animation.curves.standard
-                }
-
-            }
-
         }
 
+        Item {
+            anchors.horizontalCenter: parent.horizontalCenter
+            anchors.bottom: parent.bottom
+            anchors.bottomMargin: Metrics.margin(26)
+            width: actionRow.implicitWidth + Metrics.margin(28)
+            height: actionRow.implicitHeight + Metrics.margin(28)
+
+            Rectangle {
+                anchors.fill: parent
+                radius: Metrics.radius("xlarge") + 24
+                color: Qt.alpha(Appearance.m3colors.m3surfaceContainerLowest, 0.97)
+                border.width: 2
+                border.color: Qt.alpha(Appearance.m3colors.m3primary, 0.95)
+            }
+
+            RowLayout {
+                id: actionRow
+                anchors.centerIn: parent
+                spacing: Metrics.spacing(22)
+
+                PowerMenuButton {
+                    id: powerButton
+                    buttonIcon: "power_settings_new"
+                    tooltipText: "Power off"
+                    selected: powermenu.selectedIndex === 0
+                    onClicked: {
+                        Quickshell.execDetached(["poweroff"]);
+                        powermenu.closeMenu();
+                    }
+                }
+
+                PowerMenuButton {
+                    id: rebootButton
+                    buttonIcon: "restart_alt"
+                    tooltipText: "Reboot"
+                    selected: powermenu.selectedIndex === 1
+                    onClicked: {
+                        Quickshell.execDetached(["reboot"]);
+                        powermenu.closeMenu();
+                    }
+                }
+
+                PowerMenuButton {
+                    id: lockButton
+                    buttonIcon: "lock"
+                    tooltipText: "Lock"
+                    selected: powermenu.selectedIndex === 2
+                    onClicked: {
+                        Quickshell.execDetached(["qs", "-c", "nucleus-shell", "ipc", "call", "lockscreen", "lock"]);
+                        powermenu.closeMenu();
+                    }
+                }
+
+                PowerMenuButton {
+                    id: sleepButton
+                    buttonIcon: "sleep"
+                    tooltipText: "Suspend"
+                    selected: powermenu.selectedIndex === 3
+                    onClicked: {
+                        Quickshell.execDetached(["systemctl", "suspend"]);
+                        powermenu.closeMenu();
+                    }
+                }
+
+                PowerMenuButton {
+                    id: logoutButton
+                    buttonIcon: "logout"
+                    tooltipText: "Logout"
+                    selected: powermenu.selectedIndex === 4
+                    onClicked: {
+                        Quickshell.execDetached(["hyprctl", "dispatch", "exit"]);
+                        powermenu.closeMenu();
+                    }
+                }
+            }
+        }
     }
 
     IpcHandler {
@@ -140,14 +165,86 @@ PanelWindow {
         target: "powermenu"
     }
 
-    component PowerMenuButton: StyledButton {
+    component PowerMenuButton: Item {
         property string buttonIcon
+        property bool selected: false
+        property string tooltipText: ""
 
-        icon: buttonIcon
-        iconSize: Metrics.iconSize(50)
-        width: powermenu.implicitWidth / 3.4
-        height: powermenu.implicitHeight / 2.3
-        radius: beingHovered ? Metrics.radius("verylarge") * 2 : Metrics.radius("large")
+        signal clicked
+
+        width: 106
+        height: 106
+        property color boxColor: mouseArea.pressed ? Qt.alpha(Appearance.m3colors.m3primaryContainer, 0.42) : selected ? Qt.alpha(Appearance.m3colors.m3surfaceContainerHighest, 0.2) : hover.hovered ? Qt.alpha(Appearance.m3colors.m3surfaceContainerHighest, 0.1) : "transparent"
+
+        Rectangle {
+            anchors.fill: parent
+            radius: Metrics.radius("xlarge") + 14
+            color: boxColor
+            border.width: selected ? 2 : 1
+            border.color: selected ? Qt.alpha(Appearance.m3colors.m3primary, 0.95) : Qt.alpha(Appearance.m3colors.m3outlineVariant, hover.hovered ? 0.5 : 0.24)
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Metrics.chronoDuration("small") / 2
+                    easing.type: Appearance.animation.easing
+                }
+            }
+
+            Behavior on border.color {
+                ColorAnimation {
+                    duration: Metrics.chronoDuration("small") / 2
+                    easing.type: Appearance.animation.easing
+                }
+            }
+
+            Behavior on border.width {
+                NumberAnimation {
+                    duration: Metrics.chronoDuration("small") / 2
+                    easing.type: Appearance.animation.easing
+                }
+            }
+        }
+
+        MaterialSymbol {
+            anchors.centerIn: parent
+            icon: buttonIcon
+            iconSize: Metrics.iconSize(40)
+            color: selected ? Qt.alpha(Appearance.m3colors.m3primary, 0.95) : Appearance.m3colors.m3onSurface
+
+            Behavior on color {
+                ColorAnimation {
+                    duration: Metrics.chronoDuration("small") / 2
+                    easing.type: Appearance.animation.easing
+                }
+            }
+        }
+
+        MouseArea {
+            id: mouseArea
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: parent.clicked()
+        }
+
+        HoverHandler {
+            id: hover
+            enabled: tooltipText !== ""
+        }
+
+        LazyLoader {
+            active: tooltipText !== ""
+
+            StyledPopout {
+                hoverTarget: hover
+                hoverDelay: Metrics.chronoDuration(500)
+
+                Component {
+                    StyledText {
+                        text: tooltipText
+                    }
+                }
+            }
+        }
     }
-
 }
