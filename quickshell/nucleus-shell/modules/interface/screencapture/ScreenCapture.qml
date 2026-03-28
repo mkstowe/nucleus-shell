@@ -36,6 +36,23 @@ Scope {
         Globals.states.screenCaptureOpen = true;
     }
 
+    function closeCapture() {
+        if (root.countdownVisible)
+            root.cancelDelayedCapture();
+
+        if (root.active)
+            Globals.states.screenCaptureOpen = false;
+    }
+
+    function toggleCapture() {
+        if (root.active || root.countdownVisible) {
+            root.closeCapture();
+            return;
+        }
+
+        root.openCapture();
+    }
+
     function startDelayedCapture(command, savedPath, delaySeconds) {
         root.pendingCommand = command;
         root.pendingSavedPath = savedPath;
@@ -84,10 +101,14 @@ Scope {
     }
 
     IpcHandler {
-        target: "screen"
+        target: "screenCapture"
 
         function capture() {
             root.openCapture();
+        }
+
+        function toggle() {
+            root.toggleCapture();
         }
     }
 
@@ -185,7 +206,10 @@ Scope {
                     if (win.processing && event.key !== Qt.Key_Escape)
                         return;
 
-                    if (event.key === Qt.Key_F) {
+                    if (event.key === Qt.Key_D) {
+                        win.delayedCaptureEnabled = !win.delayedCaptureEnabled;
+                        event.accepted = true;
+                    } else if (event.key === Qt.Key_F) {
                         win.captureFullscreen();
                         event.accepted = true;
                     } else if (event.key === Qt.Key_R) {
@@ -364,6 +388,7 @@ Scope {
                             StyledSwitch {
                                 checked: win.delayedCaptureEnabled
                                 enabled: !win.processing
+                                tooltipText: "Toggle delayed capture [D]"
                                 onToggled: checked => win.delayedCaptureEnabled = checked
                             }
                         }

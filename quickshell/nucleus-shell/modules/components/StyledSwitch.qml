@@ -1,6 +1,7 @@
 import qs.config
 import QtQuick
 import QtQuick.Controls
+import Quickshell
 
 Item {
     id: root
@@ -8,6 +9,7 @@ Item {
     height: 34
 
     property bool checked: false
+    property string tooltipText: ""
     signal toggled(bool checked)
 
     // Colors
@@ -133,6 +135,26 @@ Item {
         onClicked: {
             root.checked = !root.checked
             root.toggled(root.checked)
+        }
+    }
+
+    HoverHandler {
+        id: hover
+        enabled: root.tooltipText !== ""
+    }
+
+    LazyLoader {
+        active: root.tooltipText !== ""
+
+        StyledPopout {
+            hoverTarget: hover
+            hoverDelay: Metrics.chronoDuration(500)
+
+            Component {
+                StyledText {
+                    text: root.tooltipText
+                }
+            }
         }
     }
 }
