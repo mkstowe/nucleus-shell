@@ -43,6 +43,10 @@ Item {
             }
         }
 
+        LauncherModule {
+            displayName: root.displayName
+        }
+
         MediaPlayerModule {
             displayName: root.displayName
         }
@@ -103,6 +107,10 @@ Item {
                 onToggled: function () {
                     Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft;
                 }
+            }
+
+            LauncherModule {
+                displayName: root.displayName
             }
 
             SystemUsageModule {

@@ -116,6 +116,9 @@ Scope {
             property string slurpBoxColor: root.toSlurpColor(Appearance.m3colors.m3surface, "ee")
             property string slurpFontFamily: Config.runtime.appearance.font.families.main
 
+            visible: root.active
+            focusable: root.active
+            aboveWindows: true
             color: "transparent"
             anchors {
                 top: true
@@ -125,6 +128,7 @@ Scope {
             }
             WlrLayershell.layer: WlrLayer.Overlay
             WlrLayershell.exclusionMode: ExclusionMode.Ignore
+            WlrLayershell.keyboardFocus: root.active ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
             WlrLayershell.namespace: "nucleus:screencapture"
 
             function close() {
@@ -171,7 +175,8 @@ Scope {
                 win.queueCapture("_region", () => "selection=$(slurp -d" + " -b '" + win.slurpBackgroundColor + "'" + " -c '" + win.slurpBorderColor + "'" + " -s '" + win.slurpSelectionColor + "'" + " -B '" + win.slurpBoxColor + "'" + " -F '" + win.slurpFontFamily + "'" + " -w 2) && [ -n \"$selection\" ] && " + "grim -g \"$selection\" '" + win.savedPath + "'" + " && wl-copy --type image/png < '" + win.savedPath + "'");
             }
 
-            Item {
+            FocusScope {
+                id: keyHandler
                 anchors.fill: parent
                 focus: true
 
@@ -426,8 +431,10 @@ Scope {
             }
 
             onVisibleChanged: {
-                if (visible)
+                if (visible) {
                     grab.active = true;
+                    keyHandler.forceActiveFocus();
+                }
             }
 
             Connections {

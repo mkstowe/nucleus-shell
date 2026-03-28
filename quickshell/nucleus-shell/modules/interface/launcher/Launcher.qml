@@ -17,10 +17,14 @@ PanelWindow {
     id: launcherWindow
 
     readonly property bool launcherOpen: Globals.visiblility.launcher
+    readonly property int launcherWidth: DisplayMetrics.scaledWidth(0.31)
+    readonly property int launcherHeight: DisplayMetrics.scaledHeight(0.34)
+    readonly property int resultRowHeight: Metrics.margin(60)
+    readonly property int resultRowSpacing: Metrics.spacing(10)
 
     visible: launcherOpen
-    focusable: true
-    aboveWindows: true // btw I never knew this was a property (read docs)
+    focusable: launcherOpen
+    aboveWindows: true
     color: "transparent"
 
     anchors {
@@ -31,131 +35,132 @@ PanelWindow {
     }
 
     exclusionMode: ExclusionMode.Ignore // why this? idk but it works atleast
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.Exclusive
+    WlrLayershell.keyboardFocus: launcherOpen ? WlrKeyboardFocus.Exclusive : WlrKeyboardFocus.None
 
-    ScrollView {
-        id: maskId
+    Rectangle {
+        anchors.fill: parent
+        color: Qt.alpha(Appearance.m3colors.m3surface, 1)
+    }
 
-        implicitHeight: DisplayMetrics.scaledHeight(0.623)
-        implicitWidth: DisplayMetrics.scaledWidth(0.3)
+    FocusScope {
+        id: launcher
+        property string currentSearch: ""
+        property int entryIndex: 0
+        property list<DesktopEntry> appList: Apps.list
 
-        anchors.top: parent.top
-        anchors.left: parent.left
-        anchors.leftMargin: (parent.width / 2) - (implicitWidth / 2)
-        anchors.topMargin: (parent.height / 2) - (implicitHeight / 2)
-
-        clip: true
+        anchors.horizontalCenter: parent.horizontalCenter
+        anchors.verticalCenter: parent.verticalCenter
+        anchors.verticalCenterOffset: -DisplayMetrics.scaledHeight(0.03)
+        width: launcherWindow.launcherWidth
+        height: launcherWindow.launcherHeight
         focus: true
 
-        Rectangle {
-            id: launcher
-            property string currentSearch: ""
-            property int entryIndex: 0
-            property list<DesktopEntry> appList: Apps.list
-
-            Connections {
-                target: launcherWindow
-                function onLauncherOpenChanged() {
-                    if (!launcherWindow.launcherOpen) {
-                        launcher.currentSearch = ""
-                        launcher.entryIndex = 0
-                        launcher.appList = Apps.list
-                    }
-                }
+        function refreshResults() {
+            launcher.appList = Apps.fuzzyQuery(launcher.currentSearch)
+            if (launcher.appList.length === 0) {
+                launcher.entryIndex = -1
+                return
             }
 
-            anchors.fill: parent
-            color: Appearance.m3colors.m3surface
-            radius: Metrics.radius(21)
+            launcher.entryIndex = Math.max(0, Math.min(launcher.entryIndex, launcher.appList.length - 1))
+        }
 
-            StyledRect {
-                id: searchBox
-                anchors.top: parent.top
-                anchors.topMargin: Metrics.margin(10)
-
-                color: Appearance.m3colors.m3surfaceContainerLow
-                width: parent.width - 20
-                anchors.left: parent.left
-                anchors.leftMargin: (parent.width / 2) - (width / 2)
-                height: 45
-                radius: Metrics.radius(15)
-                z: 2
-
-                focus: true
-
-                Keys.onDownPressed: launcher.entryIndex += 1
-                Keys.onUpPressed: {
-                    if (launcher.entryIndex != 0)
-                        launcher.entryIndex -= 1
+        Connections {
+            target: launcherWindow
+            function onLauncherOpenChanged() {
+                if (!launcherWindow.launcherOpen) {
+                    launcher.currentSearch = ""
+                    launcher.entryIndex = 0
+                    launcher.appList = Apps.list
+                    searchBox.text = ""
+                } else {
+                    searchBox.forceActiveFocus()
                 }
-                Keys.onEscapePressed: Globals.visiblility.launcher = false
+            }
+        }
 
-                Keys.onPressed: event => {
-                    if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
+        TextInput {
+            id: searchBox
+            anchors.top: parent.top
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: Metrics.margin(24)
+            focus: true
+            clip: true
+
+            color: Appearance.m3colors.m3onSurface
+            selectedTextColor: Appearance.m3colors.m3onPrimary
+            selectionColor: Qt.alpha(Appearance.m3colors.m3primary, 0.35)
+            font.pixelSize: Metrics.fontSize(24)
+            font.family: Metrics.fontFamily("main")
+            verticalAlignment: TextInput.AlignVCenter
+            cursorVisible: activeFocus
+
+            onTextChanged: {
+                launcher.currentSearch = text
+                launcher.entryIndex = 0
+                launcher.refreshResults()
+            }
+
+            Keys.onDownPressed: {
+                if (launcher.appList.length > 0)
+                    launcher.entryIndex = Math.min(launcher.entryIndex + 1, launcher.appList.length - 1)
+            }
+            Keys.onUpPressed: {
+                if (launcher.appList.length > 0)
+                    launcher.entryIndex = Math.max(launcher.entryIndex - 1, 0)
+            }
+            Keys.onEscapePressed: Globals.visiblility.launcher = false
+
+            Keys.onPressed: event => {
+                if (event.key === Qt.Key_Enter || event.key === Qt.Key_Return) {
+                    if (launcher.entryIndex >= 0 && launcher.entryIndex < launcher.appList.length) {
                         launcher.appList[launcher.entryIndex].execute()
                         Globals.visiblility.launcher = false
-                    } else if (event.key === Qt.Key_Backspace) {
-                        launcher.currentSearch = launcher.currentSearch.slice(0, -1)
-                    } else if (" abcdefghijklmnopqrstuvwxyz1234567890`~!@#$%^&*()-_=+[{]}\\|;:'\",<.>/?".includes(event.text.toLowerCase())) {
-                        launcher.currentSearch += event.text
                     }
-
-                    launcher.appList = Apps.fuzzyQuery(launcher.currentSearch)
-                    launcher.entryIndex = 0
-                }
-
-                MaterialSymbol {
-                    id: iconText
-                    anchors.left: parent.left
-                    anchors.leftMargin: Metrics.margin(10)
-                    icon: "search"
-                    font.pixelSize: Metrics.fontSize(14)
-                    font.weight: 600
-                    anchors.top: parent.top
-                    anchors.topMargin: (parent.height / 2) - ((font.pixelSize + 5) / 2)
-                    opacity: 0.8
-                }
-
-                StyledText {
-                    id: placeHolderText
-                    anchors.left: iconText.right
-                    anchors.leftMargin: Metrics.margin(10)
-                    color: (launcher.currentSearch != "") ? Appearance.m3colors.m3onSurface : Appearance.colors.colOutline
-                    text: (launcher.currentSearch != "") ? launcher.currentSearch : "Start typing to search ..."
-                    font.pixelSize: Metrics.fontSize(13)
-                    anchors.top: parent.top
-                    anchors.topMargin: (parent.height / 2) - ((font.pixelSize + 5) / 2)
-                    animate: false
-                    opacity: 0.8
+                    event.accepted = true
                 }
             }
+        }
 
-            ScrollView {
-                anchors.top: searchBox.bottom
-                anchors.topMargin: Metrics.margin(10)
+        ScrollView {
+            id: resultsView
+            anchors.top: searchBox.bottom
+            anchors.topMargin: Metrics.margin(32)
+            anchors.left: parent.left
+            anchors.right: parent.right
+            height: (launcherWindow.resultRowHeight * 6) + (launcherWindow.resultRowSpacing * 5)
+            clip: true
 
-                anchors.left: parent.left
-                anchors.leftMargin: (parent.width / 2) - (width / 2)
-                width: parent.width - 20
-                height: parent.height - searchBox.height - 20
+            ScrollBar.vertical.policy: ScrollBar.AlwaysOff
+            ScrollBar.horizontal.policy: ScrollBar.AlwaysOff
 
-                ListView {
-                    id: appList
-                    anchors.fill: parent
-                    spacing: Metrics.spacing(10)
-					anchors.bottomMargin: Metrics.margin(4)
+            ListView {
+                id: appList
+                anchors.fill: parent
+                spacing: launcherWindow.resultRowSpacing
+                boundsBehavior: Flickable.StopAtBounds
+                model: launcher.appList
+                currentIndex: launcher.entryIndex
 
-                    model: launcher.appList
-                    currentIndex: launcher.entryIndex
-
-                    delegate: AppItem {
-                        required property int index
-                        required property DesktopEntry modelData
-                        selected: index === launcher.entryIndex
-                        parentWidth: appList.width
-                    }
+                delegate: AppItem {
+                    required property int index
+                    required property DesktopEntry modelData
+                    selected: index === launcher.entryIndex
+                    parentWidth: appList.width
                 }
             }
+        }
+
+        StyledText {
+            visible: launcher.appList.length === 0
+            anchors.top: searchBox.bottom
+            anchors.topMargin: Metrics.margin(18)
+            anchors.left: searchBox.left
+            text: "No applications found"
+            color: Qt.alpha(Appearance.m3colors.m3outline, 0.75)
+            font.pixelSize: Metrics.fontSize(18)
+            animate: false
         }
     }
 

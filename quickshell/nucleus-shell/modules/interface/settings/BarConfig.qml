@@ -85,6 +85,9 @@ ContentMenu {
                             sidebars: {
                                 leftSidebarToggleEnabled: true,
                                 rightSidebarToggleEnabled: true
+                            },
+                            launcher: {
+                                enabled: true
                             }
                         },
                         position: "top",
@@ -237,6 +240,17 @@ ContentMenu {
             title: "Enabled"
             description: "Show right sidebar toggle"
             prefField: barKey + ".modules.sidebars.rightSidebarToggleEnabled"
+        }
+
+        StyledText {
+            text: "Launcher"
+            font.pixelSize: Metrics.fontSize(18)
+            font.bold: true
+        }
+        StyledSwitchOption {
+            title: "Enabled"
+            description: "Show launcher button"
+            prefField: barKey + ".modules.launcher.enabled"
         }
 
         StyledText {

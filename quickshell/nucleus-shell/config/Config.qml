@@ -180,6 +180,9 @@ Singleton {
                         property bool leftSidebarToggleEnabled: true
                         property bool rightSidebarToggleEnabled: true
                     }
+                    property JsonObject launcher: JsonObject {
+                        property bool enabled: true
+                    }
                     property JsonObject workspaces: JsonObject {
                         property bool enabled: true
                     }
