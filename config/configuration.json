@@ -54,6 +54,9 @@
                 "enabled": true
             },
             "height": 34,
+            "launcher": {
+                "enabled": true
+            },
             "mediaPlayer": {
                 "enabled": true
             },

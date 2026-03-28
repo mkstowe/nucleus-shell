@@ -46,7 +46,7 @@ PanelWindow {
         id: launcher
         property string currentSearch: ""
         property int entryIndex: 0
-        property list<DesktopEntry> appList: Apps.list
+        property var appList: Apps.list
 
         anchors.horizontalCenter: parent.horizontalCenter
         anchors.verticalCenter: parent.verticalCenter
@@ -55,8 +55,50 @@ PanelWindow {
         height: launcherWindow.launcherHeight
         focus: true
 
+        function webSearchUrl(query) {
+            const engine = (Config.runtime.launcher.webSearchEngine || "").toLowerCase()
+            if (engine.startsWith("http"))
+                return engine.replace("%s", encodeURIComponent(query))
+
+            const engines = {
+                "google": "https://www.google.com/search?q=%s",
+                "duckduckgo": "https://duckduckgo.com/?q=%s",
+                "brave": "https://search.brave.com/search?q=%s",
+                "bing": "https://www.bing.com/search?q=%s",
+                "startpage": "https://www.startpage.com/search?q=%s"
+            }
+
+            const template = engines[engine] || engines["google"]
+            return template.replace("%s", encodeURIComponent(query))
+        }
+
+        function defaultQuery(search) {
+            const normalized = search.toLowerCase().trim()
+            if (normalized === "")
+                return Apps.list
+
+            return Apps.list.filter(app => {
+                const name = (app.name || "").toLowerCase()
+                const comment = (app.comment || "").toLowerCase()
+                return name.includes(normalized) || comment.includes(normalized)
+            })
+        }
+
+        function webSearchEntry(query) {
+            return {
+                name: `Search the web for "${query}"`,
+                execute: () => Quickshell.execDetached(["xdg-open", launcher.webSearchUrl(query)])
+            }
+        }
+
         function refreshResults() {
-            launcher.appList = Apps.fuzzyQuery(launcher.currentSearch)
+            const query = launcher.currentSearch.trim()
+            const results = query === ""
+                ? Apps.list
+                : (Config.runtime.launcher.fuzzySearchEnabled ? Apps.fuzzyQuery(query) : launcher.defaultQuery(query))
+
+            launcher.appList = results.length > 0 ? results : (query !== "" ? [launcher.webSearchEntry(query)] : [])
+
             if (launcher.appList.length === 0) {
                 launcher.entryIndex = -1
                 return
@@ -145,7 +187,7 @@ PanelWindow {
 
                 delegate: AppItem {
                     required property int index
-                    required property DesktopEntry modelData
+                    entryData: launcher.appList[index]
                     selected: index === launcher.entryIndex
                     parentWidth: appList.width
                 }

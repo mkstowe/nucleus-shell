@@ -15,6 +15,7 @@ StyledRect {
     id: root
     property bool hovered: false
     property bool selected: false
+    required property var entryData
 
     required property int parentWidth
 
@@ -49,7 +50,7 @@ StyledRect {
 
         StyledText {
             font.weight: 400
-            text: modelData.name
+            text: entryData?.name ?? ""
             font.pixelSize: Metrics.fontSize(24)
             color: root.selected
                 ? Qt.alpha(Appearance.m3colors.m3primary, 0.95)
@@ -77,8 +78,10 @@ StyledRect {
         onEntered: root.hovered = true
         onExited: root.hovered = false
         onClicked: {
-            modelData.execute();
-            IPCLoader.toggleLauncher();
+            if (entryData?.execute) {
+                entryData.execute();
+                IPCLoader.toggleLauncher();
+            }
         }
     }
 }
