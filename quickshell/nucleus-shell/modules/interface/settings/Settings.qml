@@ -35,11 +35,14 @@ Scope {
 
         Window {
             id: root
-            width: 1280
-            height: 720
+            width: 1180
+            height: 760
             visible: true
             title: "Nucleus - Settings"
-            color: Appearance.m3colors.m3background
+            color: "transparent"
+            flags: Qt.Dialog | Qt.FramelessWindowHint
+            x: Math.round((Screen.width - width) / 2)
+            y: Math.round((Screen.height - height) / 2)
             onClosing: Globals.states.settingsOpen = false
             Component.onCompleted: settingsWindow = root
 
@@ -63,13 +66,39 @@ Scope {
 
             Item {
                 anchors.fill: parent
+
+                StyledRect {
+                    id: windowFrame
+                    anchors.fill: parent
+                    color: Appearance.m3colors.m3background
+                    radius: Appearance.rounding.screenRounding
+                    border.width: 1
+                    border.color: Appearance.m3colors.m3outlineVariant
+
+                    StyledButton {
+                        id: closeButton
+                        anchors.top: parent.top
+                        anchors.right: parent.right
+                        anchors.topMargin: Metrics.margin(20)
+                        anchors.rightMargin: Metrics.margin(20)
+                        Layout.preferredHeight: 40
+                        Layout.preferredWidth: 40
+                        icon: "close"
+                        secondary: true
+                        z: 20
+                        onClicked: root.close()
+                    }
+                }
+
                 Rectangle {
                     id: sidebarBG
-                    anchors.left: parent.left
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.left: windowFrame.left
+                    anchors.top: windowFrame.top
+                    anchors.bottom: windowFrame.bottom
                     width: root.sidebarCollapsed ? 80 : 350
                     color: Appearance.m3colors.m3surfaceContainerLow
+                    topLeftRadius: windowFrame.radius
+                    bottomLeftRadius: windowFrame.radius
 
                     ColumnLayout {
                         anchors.fill: parent
@@ -198,9 +227,9 @@ Scope {
                 StackLayout {
                     id: settingsStack
                     anchors.left: sidebarBG.right
-                    anchors.right: parent.right
-                    anchors.top: parent.top
-                    anchors.bottom: parent.bottom
+                    anchors.right: windowFrame.right
+                    anchors.top: windowFrame.top
+                    anchors.bottom: windowFrame.bottom
                     currentIndex: root.selectedIndex
 
                     BluetoothConfig    { Layout.fillWidth: true; Layout.fillHeight: true }
