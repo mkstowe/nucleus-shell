@@ -187,6 +187,9 @@ Singleton {
                     property JsonObject workspaces: JsonObject {
                         property bool enabled: true
                     }
+                    property JsonObject volume: JsonObject {
+                        property bool enabled: true
+                    }
                     property JsonObject clock: JsonObject {
                         property bool enabled: true
                     }

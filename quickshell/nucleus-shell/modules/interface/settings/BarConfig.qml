@@ -76,6 +76,9 @@ ContentMenu {
                             workspaces: {
                                 enabled: true
                             },
+                            volume: {
+                                enabled: true
+                            },
                             clock: {
                                 enabled: true
                             },
@@ -262,6 +265,17 @@ ContentMenu {
             title: "Enabled"
             description: "Show workspace indicator module"
             prefField: barKey + ".modules.workspaces.enabled"
+        }
+
+        StyledText {
+            text: "Volume"
+            font.pixelSize: Metrics.fontSize(18)
+            font.bold: true
+        }
+        StyledSwitchOption {
+            title: "Enabled"
+            description: "Show volume module"
+            prefField: barKey + ".modules.volume.enabled"
         }
 
         StyledText {

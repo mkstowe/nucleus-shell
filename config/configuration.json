@@ -1,13 +1,13 @@
 {
     "appearance": {
         "animations": {
-            "durationScale": 1,
+            "durationScale": 0.5,
             "enabled": true
         },
         "background": {
             "defaultPath": "/home/mkstowe/.config/nucleus-shell/quickshell/nucleus-shell/defaults/default.jpg",
             "enabled": true,
-            "fillMode": "tile",
+            "fillMode": "cover",
             "parallax": {
                 "enableSidebarLeft": false,
                 "enableSidebarRight": false,
@@ -73,6 +73,9 @@
                 "memoryStatsEnabled": true,
                 "tempStatsEnabled": true
             },
+            "volume": {
+                "enabled": true
+            },
             "workspaces": {
                 "enabled": true
             }
@@ -121,6 +124,9 @@
                         "memoryStatsEnabled": true,
                         "tempStatsEnabled": true
                     },
+                    "volume": {
+                        "enabled": true
+                    },
                     "workspaces": {
                         "enabled": true
                     }
@@ -128,7 +134,7 @@
                 "position": "top",
                 "radius": 23
             },
-            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tile_x.png"
+            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tboesrruypyz.webp"
         },
         "HDMI-A-1": {
             "bar": {
@@ -164,6 +170,9 @@
                         "memoryStatsEnabled": true,
                         "tempStatsEnabled": true
                     },
+                    "volume": {
+                        "enabled": true
+                    },
                     "workspaces": {
                         "enabled": true
                     }
@@ -181,8 +190,8 @@
     },
     "overlays": {
         "enabled": true,
-        "volumeOverlayEnabled": true,
-        "volumeOverlayPosition": "top"
+        "volumeOverlayEnabled": false,
+        "volumeOverlayPosition": "bottom-right"
     },
     "shell": {
         "qsVersion": "0.0.0",

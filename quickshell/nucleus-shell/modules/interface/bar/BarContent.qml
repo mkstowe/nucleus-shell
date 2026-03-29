@@ -64,6 +64,9 @@ Item {
         SystemUsageModule {
             displayName: root.displayName
         }
+        VolumeModule {
+            displayName: root.displayName
+        }
         ClockModule {
             displayName: root.displayName
         }
@@ -114,6 +117,9 @@ Item {
             }
 
             SystemUsageModule {
+                displayName: root.displayName
+            }
+            VolumeModule {
                 displayName: root.displayName
             }
             MediaPlayerModule {
