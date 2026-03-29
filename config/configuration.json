@@ -89,8 +89,7 @@
     },
     "misc": {
         "intelligence": {
-            "apiKey": "",
-            "enabled": false
+            "enabled": true
         },
         "pfp": "/home/mkstowe/.face.icon",
         "useMergedSidebarLayout": true

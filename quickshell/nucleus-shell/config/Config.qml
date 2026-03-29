@@ -9,10 +9,44 @@ import qs.services
 Singleton {
     id: root
     property string filePath: Directories.shellConfigPath
+    property string secretsFilePath: Quickshell.env("HOME") + "/.config/secrets.env"
     property alias runtime: configOptionsJsonAdapter
+    readonly property string secretsApiKey: {
+        const names = ["OPENROUTER_API_KEY", "OPENROUTER_KEY", "OPENAI_KEY"];
+        for (let i = 0; i < names.length; i++) {
+            const value = root.readSecretValue(names[i]);
+            if (value !== "")
+                return value;
+        }
+        return "";
+    }
+    readonly property string intelligenceApiKey:
+        Quickshell.env("OPENROUTER_API_KEY")
+        || Quickshell.env("OPENROUTER_KEY")
+        || Quickshell.env("OPENAI_KEY")
+        || root.secretsApiKey
+        || ""
     property bool initialized: false
     property int readWriteDelay: 50
     property bool blockWrites: false
+
+    function readSecretValue(name) {
+        const raw = secretsFileView.text();
+        if (!raw || raw === "")
+            return "";
+
+        const pattern = new RegExp("^\\s*(?:export\\s+)?" + name + "\\s*=\\s*(.*)\\s*$", "m");
+        const match = raw.match(pattern);
+        if (!match || !match[1])
+            return "";
+
+        let value = match[1].trim();
+        if ((value.startsWith("\"") && value.endsWith("\"")) ||
+            (value.startsWith("'") && value.endsWith("'"))) {
+            value = value.slice(1, -1);
+        }
+        return value;
+    }
 
     function updateKey(nestedKey, value) {
         let keys = nestedKey.split(".");
@@ -71,6 +105,13 @@ Singleton {
         onTriggered: {
             console.log("Detected Compositor:", Compositor.detectedCompositor);
         }
+    }
+
+    FileView {
+        id: secretsFileView
+        path: root.secretsFilePath
+        watchChanges: true
+        onFileChanged: reload()
     }
 
     FileView {
@@ -142,7 +183,6 @@ Singleton {
                 property bool useMergedSidebarLayout: false // use merged sidebar layout when bar is merged
                 property JsonObject intelligence: JsonObject {
                     property bool enabled: true
-                    property string apiKey: ""
                 }
             }
 

@@ -191,7 +191,7 @@ Item {
         }
     }
 
-    focus: true
+    activeFocusOnTab: true
     Keys.onPressed: (event) => {
         if (event.key === Qt.Key_Space || event.key === Qt.Key_Return) {
             dropdown.popup.visible ? dropdown.popup.close() : dropdown.popup.open()

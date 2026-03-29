@@ -19,6 +19,11 @@ Item {
     property string activeSystemPrompt: ""
     property string activePromptLabel: ""
 
+    onVisibleChanged: {
+        if (visible)
+            userInput.forceActiveFocus()
+    }
+
     readonly property var availableModels: [
         "openai/gpt-3.5-turbo",
         "openai/gpt-4",
@@ -418,9 +423,7 @@ Item {
                                     }
                                     implicitWidth: Math.min(textItem.implicitWidth + 20, chatView.width * 0.8)
                                     implicitHeight: textItem.implicitHeight
-                                    anchors.right: sender === "You" ? parent.right : undefined
-                                    anchors.left:  sender !== "You" ? parent.left  : undefined
-                                    anchors.topMargin: Metrics.margin(2)
+                                    y: Metrics.margin(2)
 
                                     TextEdit {
                                         id: textItem
@@ -594,6 +597,9 @@ Item {
                         placeholderText: "Type a message or /command…"
                         font.pixelSize: Metrics.fontSize(14)
                         padding: Metrics.padding(8)
+                        activeFocusOnTab: true
+
+                        Component.onCompleted: forceActiveFocus()
 
                         onTextChanged: {
                             let t = text.trim();

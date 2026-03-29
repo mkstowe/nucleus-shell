@@ -18,6 +18,8 @@ Singleton {
     signal chatLoaded(string text)
     signal aiReply(string text)
 
+    readonly property string effectiveApiKey: Config.intelligenceApiKey
+
     // process to load data and talk to zenith
 
     Timer {
@@ -48,14 +50,14 @@ Singleton {
     Process {
         id: zenithProcess
 
-        command: [
-            "zenith",
-            "--api", Config.runtime.misc.intelligence.apiKey,
-            "--chat", currentChat,
-            "-a",
-            "--model", currentModel,
-            pendingInput
-        ]
+        command: ["zenith"]
+        environment: effectiveApiKey !== ""
+            ? ({
+                OPENROUTER_API_KEY: effectiveApiKey,
+                OPENROUTER_KEY: effectiveApiKey,
+                OPENAI_KEY: effectiveApiKey
+            })
+            : ({})
 
         stdout: StdioCollector {
             onStreamFinished: {
@@ -77,6 +79,11 @@ Singleton {
     }
 
     function send() {
+        let zenithArgs = ["zenith"];
+        if (effectiveApiKey !== "")
+            zenithArgs.push("--api", effectiveApiKey);
+        zenithArgs.push("--chat", currentChat, "-a", "--model", currentModel, pendingInput);
+        zenithProcess.command = zenithArgs;
         zenithProcess.running = true
     }
 

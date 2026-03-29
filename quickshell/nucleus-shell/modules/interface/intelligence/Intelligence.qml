@@ -188,6 +188,7 @@ FloatingWindow {
         if (!visible) return;
         chatsInitialized = false;
         messageModel.clear();
+        userInput.forceActiveFocus();
     }
 
     IpcHandler {
@@ -451,9 +452,7 @@ FloatingWindow {
                                     }
                                     implicitWidth: Math.min(textItem.implicitWidth + 20, chatView.width * 0.8)
                                     implicitHeight: textItem.implicitHeight
-                                    anchors.right: sender === "You" ? parent.right : undefined
-                                    anchors.left:  sender !== "You" ? parent.left  : undefined
-                                    anchors.topMargin: Metrics.margin(2)
+                                    y: Metrics.margin(2)
 
                                     TextEdit {
                                         id: textItem
@@ -628,6 +627,9 @@ FloatingWindow {
                         placeholderText: "Type a message or /command…"
                         font.pixelSize: Metrics.iconSize(14)
                         padding: Metrics.spacing(8)
+                        activeFocusOnTab: true
+
+                        Component.onCompleted: forceActiveFocus()
 
                         onTextChanged: {
                             let t = text.trim();

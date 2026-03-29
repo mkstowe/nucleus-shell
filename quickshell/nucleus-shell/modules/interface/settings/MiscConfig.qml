@@ -41,30 +41,17 @@ ContentMenu {
 
     ContentCard {
         StyledText {
-            text: "Intelligence Bearer/API"
+            text: "Intelligence Setup"
             font.pixelSize: Metrics.fontSize(20)
             font.bold: true
         }
 
-        StyledTextField {
-            id: apiKeyTextField
-
-            clip: true
-            horizontalAlignment: Text.AlignLeft
-            placeholderText: Config.runtime.misc.intelligence.apiKey !== "" ? Config.runtime.misc.intelligence.apiKey : "Bearer Key"
+        StyledText {
+            text: Config.intelligenceApiKey !== ""
+                ? "Intelligence found an API key from your environment or ~/.config/secrets.env."
+                : "Add OPENROUTER_API_KEY, OPENROUTER_KEY, or OPENAI_KEY to ~/.config/secrets.env to enable Intelligence."
+            wrapMode: Text.Wrap
             Layout.fillWidth: true
-
-            Keys.onPressed: (event) => {
-                if ((event.key === Qt.Key_S && (event.modifiers & Qt.ControlModifier)) ||
-                    event.key === Qt.Key_Return ||
-                    event.key === Qt.Key_Enter) {
-
-                    event.accepted = true;
-                    Config.updateKey("misc.intelligence.apiKey", apiKeyTextField.text);
-                    Quickshell.execDetached(["notify-send", "Saved Bearer/API Key"])
-                }
-            }
-
             font.pixelSize: Metrics.fontSize(16)
         }
 
@@ -73,8 +60,8 @@ ContentMenu {
         }
 
         InfoCard {
-            title: "How to save the api key"
-            description: "In order to save the api key press Enter/Return and it will save the api key to the config."
+            title: "secrets.env"
+            description: "Example: export OPENROUTER_KEY=\"...\" in ~/.config/secrets.env, then reload Nucleus."
         }
     }
 }

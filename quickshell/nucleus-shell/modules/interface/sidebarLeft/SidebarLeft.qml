@@ -33,7 +33,9 @@ PanelWindow {
     visible: Config.initialized && (Globals.visiblility.sidebarLeft || floatingContainer.width > 0 || container.implicitWidth > 0)
     color: "transparent"
     exclusiveZone: 0
-    WlrLayershell.keyboardFocus: WlrKeyboardFocus.None
+    WlrLayershell.keyboardFocus: Globals.visiblility.sidebarLeft
+        ? WlrKeyboardFocus.Exclusive
+        : WlrKeyboardFocus.None
 
     HyprlandFocusGrab {
         id: grab
