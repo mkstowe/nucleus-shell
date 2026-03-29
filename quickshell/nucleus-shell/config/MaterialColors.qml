@@ -4,19 +4,80 @@ import QtQuick
 import QtCore
 import Quickshell
 import Quickshell.Io
+import qs.config
+import qs.services
 
 Singleton {
     id: m3colors
     property string filePath: Directories.generatedMaterialThemePath
-    property alias colors: colorsJsonAdapter
+    property alias colors: resolvedColors
     property bool ready: false
+    property var accentData: null
+    readonly property var colorKeys: [
+        "background",
+        "error",
+        "error_container",
+        "inverse_on_surface",
+        "inverse_primary",
+        "inverse_surface",
+        "on_background",
+        "on_error",
+        "on_error_container",
+        "on_primary",
+        "on_primary_container",
+        "on_primary_fixed",
+        "on_primary_fixed_variant",
+        "on_secondary",
+        "on_secondary_container",
+        "on_secondary_fixed",
+        "on_secondary_fixed_variant",
+        "on_surface",
+        "on_surface_variant",
+        "on_tertiary",
+        "on_tertiary_container",
+        "on_tertiary_fixed",
+        "on_tertiary_fixed_variant",
+        "outline",
+        "outline_variant",
+        "primary",
+        "primary_container",
+        "primary_fixed",
+        "primary_fixed_dim",
+        "scrim",
+        "secondary",
+        "secondary_container",
+        "secondary_fixed",
+        "secondary_fixed_dim",
+        "shadow",
+        "source_color",
+        "surface",
+        "surface_bright",
+        "surface_container",
+        "surface_container_high",
+        "surface_container_highest",
+        "surface_container_low",
+        "surface_container_lowest",
+        "surface_dim",
+        "surface_tint",
+        "surface_variant",
+        "tertiary",
+        "tertiary_container",
+        "tertiary_fixed",
+        "tertiary_fixed_dim"
+    ]
 
     FileView {
         id: colorsFileView
         path: m3colors.filePath
         watchChanges: true
-        onLoaded: m3colors.ready = true
-        onFileChanged: colorsFileView.reload()
+        onLoaded: {
+            m3colors.ready = true
+            m3colors.updateAccentData()
+            m3colors.applyAccentMapping()
+        }
+        onFileChanged: {
+            colorsFileView.reload()
+        }
         onLoadFailed: error => {
             if (error === FileViewError.FileNotFound) {
                 console.warn("MaterialColors: colors.json not found, writing defaults")
@@ -83,7 +144,134 @@ Singleton {
         }
     }
 
+    QtObject {
+        id: resolvedColors
+
+        property string background: "#131313"
+        property string error: "#ffb4ab"
+        property string error_container: "#93000a"
+        property string inverse_on_surface: "#303030"
+        property string inverse_primary: "#00677f"
+        property string inverse_surface: "#e2e2e2"
+        property string on_background: "#e2e2e2"
+        property string on_error: "#690005"
+        property string on_error_container: "#ffdad6"
+        property string on_primary: "#003543"
+        property string on_primary_container: "#b7eaff"
+        property string on_primary_fixed: "#001f28"
+        property string on_primary_fixed_variant: "#004e60"
+        property string on_secondary: "#1e333b"
+        property string on_secondary_container: "#cfe6f1"
+        property string on_secondary_fixed: "#071e26"
+        property string on_secondary_fixed_variant: "#344a52"
+        property string on_surface: "#e2e2e2"
+        property string on_surface_variant: "#c6c6c6"
+        property string on_tertiary: "#2c2e4d"
+        property string on_tertiary_container: "#e0e0ff"
+        property string on_tertiary_fixed: "#171937"
+        property string on_tertiary_fixed_variant: "#424465"
+        property string outline: "#919191"
+        property string outline_variant: "#474747"
+        property string primary: "#a571f2"
+        property string primary_container: "#004e60"
+        property string primary_fixed: "#b7eaff"
+        property string primary_fixed_dim: "#5cd5fb"
+        property string scrim: "#000000"
+        property string secondary: "#b3cad4"
+        property string secondary_container: "#344a52"
+        property string secondary_fixed: "#cfe6f1"
+        property string secondary_fixed_dim: "#b3cad4"
+        property string shadow: "#000000"
+        property string source_color: "#829aa4"
+        property string surface: "#131313"
+        property string surface_bright: "#393939"
+        property string surface_container: "#1f1f1f"
+        property string surface_container_high: "#2a2a2a"
+        property string surface_container_highest: "#353535"
+        property string surface_container_low: "#1b1b1b"
+        property string surface_container_lowest: "#0e0e0e"
+        property string surface_dim: "#131313"
+        property string surface_tint: "#5cd5fb"
+        property string surface_variant: "#474747"
+        property string tertiary: "#c3c3eb"
+        property string tertiary_container: "#424465"
+        property string tertiary_fixed: "#e0e0ff"
+        property string tertiary_fixed_dim: "#c3c3eb"
+    }
+
+    function copyRawColors() {
+        for (let i = 0; i < colorKeys.length; ++i) {
+            const key = colorKeys[i]
+            resolvedColors[key] = colorsJsonAdapter[key]
+        }
+    }
+
+    function updateAccentData() {
+        try {
+            const parsed = JSON.parse(colorsFileView.text())
+            accentData = parsed.accents || null
+        } catch (e) {
+            accentData = null
+        }
+    }
+
+    function applyRole(role, family) {
+        if (!family)
+            return
+
+        resolvedColors[role] = family.color
+        resolvedColors["on_" + role] = family.onColor
+        resolvedColors[role + "_container"] = family.container
+        resolvedColors["on_" + role + "_container"] = family.onContainer
+        resolvedColors[role + "_fixed"] = family.fixed
+        resolvedColors[role + "_fixed_dim"] = family.fixedDim
+        resolvedColors["on_" + role + "_fixed"] = family.onFixed
+        resolvedColors["on_" + role + "_fixed_variant"] = family.onFixedVariant
+    }
+
+    function applyAccentMapping() {
+        copyRawColors()
+
+        const accents = Config.runtime.appearance.colors.accents
+
+        applyRole("primary", ThemeAccents.resolveFamily(accentData, accents?.primary || "default", colorsJsonAdapter, "primary"))
+        applyRole("secondary", ThemeAccents.resolveFamily(accentData, accents?.secondary || "default", colorsJsonAdapter, "secondary"))
+        applyRole("tertiary", ThemeAccents.resolveFamily(accentData, accents?.tertiary || "default", colorsJsonAdapter, "tertiary"))
+    }
+
     function reload() {
         colorsFileView.reload()
+    }
+
+    Connections {
+        target: Config.runtime.appearance.colors
+
+        function onSchemeChanged() {
+            m3colors.applyAccentMapping()
+        }
+    }
+
+    Connections {
+        target: Config.runtime.appearance
+
+        function onThemeChanged() {
+            m3colors.applyAccentMapping()
+        }
+    }
+
+    Connections {
+        target: Config.runtime.appearance.colors.accents
+
+        function onPrimaryChanged() {
+            m3colors.applyAccentMapping()
+        }
+
+        function onSecondaryChanged() {
+            m3colors.applyAccentMapping()
+        }
+
+        function onTertiaryChanged() {
+            m3colors.applyAccentMapping()
+        }
     }
 }

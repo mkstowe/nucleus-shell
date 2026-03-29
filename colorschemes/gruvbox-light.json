@@ -1,0 +1,91 @@
+{
+  "_comment": "Gruvbox light theme for Nucleus Shell",
+  "background": "#fbf1c7",
+  "error": "#cc241d",
+  "error_container": "#9d0006",
+  "inverse_on_surface": "#fbf1c7",
+  "inverse_primary": "#8f3f71",
+  "inverse_surface": "#3c3836",
+  "on_background": "#3c3836",
+  "on_error": "#fbf1c7",
+  "on_error_container": "#fbf1c7",
+  "on_primary": "#fbf1c7",
+  "on_primary_container": "#3c3836",
+  "on_primary_fixed": "#3c3836",
+  "on_primary_fixed_variant": "#504945",
+  "on_secondary": "#fbf1c7",
+  "on_secondary_container": "#3c3836",
+  "on_secondary_fixed": "#3c3836",
+  "on_secondary_fixed_variant": "#504945",
+  "on_surface": "#3c3836",
+  "on_surface_variant": "#504945",
+  "on_tertiary": "#fbf1c7",
+  "on_tertiary_container": "#3c3836",
+  "on_tertiary_fixed": "#3c3836",
+  "on_tertiary_fixed_variant": "#504945",
+  "outline": "#928374",
+  "outline_variant": "#bdae93",
+  "primary": "#427b58",
+  "primary_container": "#8ec07c",
+  "primary_fixed": "#689d6a",
+  "primary_fixed_dim": "#427b58",
+  "scrim": "#000000",
+  "secondary": "#076678",
+  "secondary_container": "#83a598",
+  "secondary_fixed": "#458588",
+  "secondary_fixed_dim": "#076678",
+  "shadow": "#000000",
+  "source_color": "#d79921",
+  "surface": "#fbf1c7",
+  "surface_bright": "#f9f5d7",
+  "surface_container": "#f2e5bc",
+  "surface_container_high": "#ebdbb2",
+  "surface_container_highest": "#d5c4a1",
+  "surface_container_low": "#fbf1c7",
+  "surface_container_lowest": "#ffffff",
+  "surface_dim": "#ebdbb2",
+  "surface_tint": "#427b58",
+  "surface_variant": "#ebdbb2",
+  "tertiary": "#b57614",
+  "tertiary_container": "#d79921",
+  "tertiary_fixed": "#d65d0e",
+  "tertiary_fixed_dim": "#af3a03",
+  "accents": {
+    "defaults": {
+      "onColor": "#fbf1c7",
+      "onContainer": "#3c3836",
+      "onFixed": "#fbf1c7",
+      "onFixedVariant": "#504945"
+    },
+    "colors": {
+      "red": {
+        "color": "#cc241d",
+        "container": "#fb4934"
+      },
+      "green": {
+        "color": "#79740e",
+        "container": "#b8bb26"
+      },
+      "yellow": {
+        "color": "#b57614",
+        "container": "#fabd2f"
+      },
+      "blue": {
+        "color": "#076678",
+        "container": "#83a598"
+      },
+      "purple": {
+        "color": "#8f3f71",
+        "container": "#d3869b"
+      },
+      "aqua": {
+        "color": "#427b58",
+        "container": "#8ec07c"
+      },
+      "orange": {
+        "color": "#af3a03",
+        "container": "#fe8019"
+      }
+    }
+  }
+}

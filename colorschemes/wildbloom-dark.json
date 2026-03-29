@@ -49,5 +49,43 @@
   "tertiary": "#e7be96",
   "tertiary_container": "#684f3b",
   "tertiary_fixed": "#ffddb9",
-  "tertiary_fixed_dim": "#e7be96"
+  "tertiary_fixed_dim": "#e7be96",
+  "accents": {
+    "defaults": {
+      "onColor": "#161215",
+      "onContainer": "#eadfe5",
+      "onFixed": "#161215",
+      "onFixedVariant": "#d2c3cb"
+    },
+    "colors": {
+      "red": {
+        "color": "#ffb4ab",
+        "container": "#93000a"
+      },
+      "green": {
+        "color": "#bdd0b7",
+        "container": "#42523e"
+      },
+      "yellow": {
+        "color": "#e7be96",
+        "container": "#684f3b"
+      },
+      "blue": {
+        "color": "#bdc8e8",
+        "container": "#465272"
+      },
+      "purple": {
+        "color": "#f0b7d3",
+        "container": "#6b485f"
+      },
+      "aqua": {
+        "color": "#add6cf",
+        "container": "#355a58"
+      },
+      "orange": {
+        "color": "#e7be96",
+        "container": "#684f3b"
+      }
+    }
+  }
 }
