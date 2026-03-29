@@ -13,17 +13,19 @@ Item {
     property string label: "Select option"
     property var model: ["Option 1", "Option 2", "Option 3", "Option 4", "Option 5"]
     property int currentIndex: -1
+    readonly property int effectiveIndex: currentIndex >= 0 ? currentIndex : dropdown.currentIndex
     property string currentText: {
-        if (currentIndex < 0)
+        if (effectiveIndex < 0)
             return ""
 
         if (textRole && model && model.get)
-            return model.get(currentIndex)[textRole] ?? ""
+            return model.get(effectiveIndex)[textRole] ?? ""
 
-        return model[currentIndex] ?? ""
+        return model[effectiveIndex] ?? ""
     }
     property bool enabled: true
     property string textRole: ""
+    property bool userSelectionPending: false
 
     signal selectedIndexChanged(int index)
 
@@ -74,8 +76,8 @@ Item {
                 id: labelText
                 Layout.fillWidth: true
                 Layout.alignment: Qt.AlignVCenter
-                text: root.currentIndex >= 0 ? root.currentText : root.label
-                color: root.currentIndex >= 0
+                text: root.effectiveIndex >= 0 ? root.currentText : root.label
+                color: root.effectiveIndex >= 0
                     ? Appearance.m3colors.m3onSurface
                     : ColorUtils.transparentize(Appearance.m3colors.m3onSurfaceVariant, 0.7)
                 font.pixelSize: Metrics.fontSize(16)
@@ -103,8 +105,10 @@ Item {
 
         onCurrentIndexChanged: {
             if (currentIndex >= 0) {
-                root.currentIndex = currentIndex
-                root.selectedIndexChanged(currentIndex)
+                if (root.userSelectionPending) {
+                    root.userSelectionPending = false
+                    root.selectedIndexChanged(currentIndex)
+                }
             }
         }
 
@@ -145,7 +149,7 @@ Item {
                         color: {
                             if (itemMouse.pressed) return ColorUtils.transparentize(Appearance.m3colors.m3primaryContainer, 0.12)
                             if (itemMouse.containsMouse) return ColorUtils.transparentize(Appearance.m3colors.m3primaryContainer, 0.08)
-                            if (index === root.currentIndex) return ColorUtils.transparentize(Appearance.m3colors.m3primaryContainer, 0.08)
+                            if (index === root.effectiveIndex) return ColorUtils.transparentize(Appearance.m3colors.m3primaryContainer, 0.08)
                             return "transparent"
                         }
                         radius: Metrics.radius("normal")
@@ -156,7 +160,7 @@ Item {
 
                     contentItem: StyledText {
                         text: modelData
-                        color: index === root.currentIndex ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
+                        color: index === root.effectiveIndex ? Appearance.m3colors.m3primary : Appearance.m3colors.m3onSurface
                         font.pixelSize: Metrics.fontSize(16)
                         verticalAlignment: Text.AlignVCenter
                         leftPadding: Metrics.fontSize(16)
@@ -167,6 +171,7 @@ Item {
                         anchors.fill: parent
                         hoverEnabled: true
                         onClicked: {
+                            root.userSelectionPending = true
                             dropdown.currentIndex = index
                             dropdown.popup.close()
                         }

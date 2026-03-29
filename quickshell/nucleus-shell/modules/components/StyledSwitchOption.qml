@@ -8,6 +8,7 @@ RowLayout {
     property string title: "Title"
     property string description: "Description"
     property string prefField: ''
+    property var onToggledFn: null
 
     ColumnLayout {
         StyledText { text: main.title; font.pixelSize: Metrics.fontSize(16);  }
@@ -32,6 +33,8 @@ RowLayout {
         onToggled: {
             // Persist change (updateKey will create missing objects)
             Config.updateKey(main.prefField, checked);
+            if (main.onToggledFn)
+                main.onToggledFn(checked);
         }
     }
 }
