@@ -27,7 +27,7 @@ ContentMenu {
                 StyledText {
                     text: "Choose between dark or light mode."
                     font.pixelSize: Metrics.fontSize(12)
-                    color: "#888888"
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
             }
 
@@ -58,12 +58,16 @@ ContentMenu {
 
                             Config.updateKey("appearance.theme", "dark")
                             Quickshell.execDetached([
-                                "nucleus", "theme", "switch", file
+                                "bash",
+                                Directories.scriptsPath + "/interface/switchTheme.sh",
+                                file
                             ])
                         } else {
                             Config.updateKey("appearance.theme", "dark")
                             Quickshell.execDetached([
-                                "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
+                                "qs", "ipc",
+                                "-p", Quickshell.shellPath("."),
+                                "call", "global", "regenColors", root.screen.name
                             ])
                         }
                     }
@@ -90,12 +94,16 @@ ContentMenu {
 
                             Config.updateKey("appearance.theme", "light")
                             Quickshell.execDetached([
-                                "nucleus", "theme", "switch", file
+                                "bash",
+                                Directories.scriptsPath + "/interface/switchTheme.sh",
+                                file
                             ])
                         } else {
                             Config.updateKey("appearance.theme", "light")
                             Quickshell.execDetached([
-                                "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
+                                "qs", "ipc",
+                                "-p", Quickshell.shellPath("."),
+                                "call", "global", "regenColors", root.screen.name
                             ])
                         }
                     }
@@ -148,7 +156,9 @@ ContentMenu {
                     const selectedScheme = model[index]
                     Config.updateKey("appearance.colors.matugenScheme", selectedScheme)
                     Quickshell.execDetached([
-                        "nucleus", "ipc", "call", "global", "regenColors", root.screen.name
+                        "qs", "ipc",
+                        "-p", Quickshell.shellPath("."),
+                        "call", "global", "regenColors", root.screen.name
                     ])
                 }
 
@@ -189,7 +199,9 @@ ContentMenu {
 
                     Config.updateKey("appearance.colors.scheme", selectedTheme)
                     Quickshell.execDetached([
-                        "nucleus", "theme", "switch", file
+                        "bash",
+                        Directories.scriptsPath + "/interface/switchTheme.sh",
+                        file
                     ])
                 }
 

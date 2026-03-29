@@ -132,13 +132,14 @@ Scope {
                                 }
 
                                 Rectangle {
+                                    id: itemBackground
                                     width: root.sidebarCollapsed ? 40 : parent.width
                                     height: parent.height
                                     anchors.horizontalCenter: parent.horizontalCenter
                                     visible: !modelData.header
                                     radius: Appearance.rounding.large
                                     color: root.selectedIndex === modelData.page
-                                           ? Appearance.m3colors.m3primary
+                                           ? Appearance.m3colors.m3primaryContainer
                                            : "transparent"
 
                                     RowLayout {
@@ -151,10 +152,16 @@ Scope {
                                         MaterialSymbol {
                                             icon: modelData.icon ? modelData.icon : ""
                                             iconSize: Metrics.iconSize(24)
+                                            color: root.selectedIndex === modelData.page
+                                                ? Appearance.m3colors.m3onPrimaryContainer
+                                                : Appearance.m3colors.m3onSurface
                                         }
 
                                         StyledText {
                                             text: modelData.label
+                                            color: root.selectedIndex === modelData.page
+                                                ? Appearance.m3colors.m3onPrimaryContainer
+                                                : Appearance.m3colors.m3onSurface
                                         }
                                     }
 
@@ -164,6 +171,9 @@ Scope {
                                         anchors.centerIn: parent
                                         icon: modelData.icon ? modelData.icon : ""
                                         iconSize: Metrics.iconSize(24)
+                                        color: root.selectedIndex === modelData.page
+                                            ? Appearance.m3colors.m3onPrimaryContainer
+                                            : Appearance.m3colors.m3onSurface
                                     }
                                 }
 

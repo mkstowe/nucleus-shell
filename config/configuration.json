@@ -61,7 +61,7 @@
             "mediaPlayer": {
                 "enabled": true
             },
-            "paddingColor": "#1f1f1f",
+            "paddingColor": "#1f2020",
             "radius": 17,
             "sidebars": {
                 "leftSidebarToggleEnabled": true,

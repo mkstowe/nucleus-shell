@@ -71,7 +71,7 @@ PanelWindow {
     Rectangle {
         id: overlay
         anchors.fill: parent
-        color: "black"
+        color: Appearance.m3colors.m3scrim
         opacity: 0   // FIX: removed transparency that caused blur
 
         Behavior on opacity {

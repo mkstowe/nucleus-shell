@@ -35,7 +35,7 @@ Item {
             visible: ConfigResolver.bar(root.displayName).modules.sidebars.leftSidebarToggleEnabled
             icon: "left_panel_open"
             iconSize: Metrics.iconSize(22)
-            iconColor: Appearance.m3colors.m3error
+            iconColor: Appearance.m3colors.m3primary
             toggle: Globals.visiblility.sidebarLeft
 
             onToggled: function () {
@@ -103,7 +103,7 @@ Item {
                 visible: ConfigResolver.bar(root.displayName).modules.sidebars.leftSidebarToggleEnabled
                 icon: "menu"
                 iconSize: Metrics.iconSize(22)
-                iconColor: Appearance.m3colors.m3error
+                iconColor: Appearance.m3colors.m3primary
                 toggle: Globals.visiblility.sidebarLeft
                 rotation: 270
 

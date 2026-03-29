@@ -49,13 +49,15 @@ run_with_config() {
     matugen --config "$CONFIG_PATH" \
         image "$WALLPAPER_PATH" \
         --type "$SCHEME_TYPE" \
-        --mode "$SCHEME_MODE"
+        --mode "$SCHEME_MODE" \
+        --source-color-index 0
 }
 
 run_without_config() {
     matugen image "$WALLPAPER_PATH" \
         --type "$SCHEME_TYPE" \
-        --mode "$SCHEME_MODE"
+        --mode "$SCHEME_MODE" \
+        --source-color-index 0
 }
 
 if $USER_WIDE; then

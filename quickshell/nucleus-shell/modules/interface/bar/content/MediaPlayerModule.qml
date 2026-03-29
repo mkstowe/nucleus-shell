@@ -73,7 +73,7 @@ Item {
                     icon: "music_note"
 
                     iconSize: 18
-                    color: Config.runtime.appearance.theme === "dark" ? "#b1a4a4" : "grey"
+                    color: Appearance.m3colors.m3onSurfaceVariant
                 }
             }
 

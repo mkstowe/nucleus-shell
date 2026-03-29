@@ -49,9 +49,9 @@ Item {
                         radius: width / 2
                         color: focused
                             ? Appearance.m3colors.m3tertiary
-                            : (occupied ? "#FFFFFF" : "transparent")
+                            : (occupied ? Appearance.m3colors.m3onSurface : "transparent")
                         border.width: focused || occupied ? 0 : 2
-                        border.color: "#FFFFFF"
+                        border.color: Appearance.m3colors.m3onSurface
 
                         Behavior on width {
                             enabled: Config.runtime.appearance.animations.enabled

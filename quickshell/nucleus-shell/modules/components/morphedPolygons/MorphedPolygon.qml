@@ -6,7 +6,7 @@ import qs.config
 
 Canvas {
     id: root
-    property color color: "#685496"
+    property color color: Appearance.m3colors.m3primary
     property var roundedPolygon: null
     property bool polygonIsNormalized: true
     property real borderWidth: 0
