@@ -127,6 +127,7 @@ Singleton {
                 property JsonObject background: JsonObject {
                     property bool enabled: true
                     property url defaultPath: Directories.defaultsPath + "/default.jpg"
+                    property string fillMode: "cover"
                     property JsonObject parallax: JsonObject {
                         property bool enabled: true
                         property bool enableSidebarLeft: true

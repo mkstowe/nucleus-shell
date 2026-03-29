@@ -10,6 +10,12 @@ import qs.services
 ContentMenu {
 
     property string displayName: root.screen?.name ?? ""
+    property var fillModeOptions: [
+        { label: "Cover", value: "cover" },
+        { label: "Fit", value: "fit" },
+        { label: "Stretch", value: "stretch" },
+        { label: "Tile", value: "tile" }
+    ]
 
     title: "Wallpaper"
     description: "Manage your wallpapers"
@@ -33,7 +39,18 @@ ContentMenu {
 
                 Image {
                     anchors.fill: parent
-                    fillMode: Image.PreserveAspectCrop
+                    fillMode: {
+                        switch (Config.runtime.appearance.background.fillMode) {
+                        case "fit":
+                            return Image.PreserveAspectFit
+                        case "stretch":
+                            return Image.Stretch
+                        case "tile":
+                            return Image.Tile
+                        default:
+                            return Image.PreserveAspectCrop
+                        }
+                    }
                     cache: true
 
                     property string previewImg: {
@@ -71,7 +88,9 @@ ContentMenu {
 
                 onClicked: {
                     Quickshell.execDetached([
-                        "nucleus","ipc","call","background","change"
+                        "qs", "ipc",
+                        "-p", Quickshell.shellPath("."),
+                        "call", "background", "change"
                     ])
                 }
             }
@@ -80,6 +99,23 @@ ContentMenu {
                 title: "Enabled"
                 description: "Enable or disable the wallpaper daemon."
                 prefField: "appearance.background.enabled"
+            }
+
+            StyledDropDown {
+                label: "Wallpaper Mode"
+                model: fillModeOptions.map(option => option.label)
+                currentIndex: {
+                    const idx = fillModeOptions.findIndex(
+                        option => option.value === Config.runtime.appearance.background.fillMode
+                    )
+                    return idx >= 0 ? idx : 0
+                }
+
+                onSelectedIndexChanged: index => {
+                    const selected = fillModeOptions[index]
+                    if (selected)
+                        Config.updateKey("appearance.background.fillMode", selected.value)
+                }
             }
         }
     }
