@@ -224,7 +224,7 @@ Scope {
                 Image {
                     id: bg
                     anchors.fill: parent
-                    source: Config.runtime.appearance.background.path
+                    source: Ipc.wallpaperPath
                     fillMode: Image.PreserveAspectCrop
                     opacity: 0
                     scale: 1

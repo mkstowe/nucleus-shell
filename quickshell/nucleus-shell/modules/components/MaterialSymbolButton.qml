@@ -6,7 +6,6 @@ MaterialSymbol {
     id: root
 
     // Expose mouse props
-    property alias enabled: ma.enabled
     property alias hoverEnabled: ma.hoverEnabled
     property alias pressed: ma.pressed
     property string tooltipText: ""
@@ -24,6 +23,7 @@ MaterialSymbol {
         id: ma
 
         anchors.fill: parent
+        enabled: root.enabled
         hoverEnabled: true
         onClicked: root.buttonClicked()
         onEntered: root.buttonEntered()

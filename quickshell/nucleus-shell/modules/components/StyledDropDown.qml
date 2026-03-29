@@ -23,7 +23,6 @@ Item {
 
         return model[effectiveIndex] ?? ""
     }
-    property bool enabled: true
     property string textRole: ""
     property bool userSelectionPending: false
 

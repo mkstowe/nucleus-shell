@@ -30,7 +30,7 @@ RowLayout {
             return cur === undefined || cur === null ? false : cur;
         }
 
-        onToggled: {
+        onToggled: checked => {
             // Persist change (updateKey will create missing objects)
             Config.updateKey(main.prefField, checked);
             if (main.onToggledFn)

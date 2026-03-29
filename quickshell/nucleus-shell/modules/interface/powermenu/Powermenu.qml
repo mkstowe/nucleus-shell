@@ -157,14 +157,6 @@ PanelWindow {
         }
     }
 
-    IpcHandler {
-        function toggle() {
-            togglepowermenu();
-        }
-
-        target: "powermenu"
-    }
-
     component PowerMenuButton: Item {
         property string buttonIcon
         property bool selected: false

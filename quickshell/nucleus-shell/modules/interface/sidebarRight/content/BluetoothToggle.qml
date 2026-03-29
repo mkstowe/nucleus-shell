@@ -15,7 +15,7 @@ StyledRect {
     Layout.alignment: Qt.AlignHCenter | Qt.AlignVCenter
 
     readonly property bool adapterPresent: Bluetooth.defaultAdapter !== null
-    readonly property bool enabled: Bluetooth.defaultAdapter?.enabled ?? false
+    readonly property bool bluetoothEnabled: Bluetooth.defaultAdapter?.enabled ?? false
     readonly property var activeDevice: Bluetooth.activeDevice
 
     readonly property string iconName: Bluetooth.icon
@@ -23,7 +23,7 @@ StyledRect {
     readonly property string statusText: {
         if (!adapterPresent)
             return "No adapter";
-        if (!enabled)
+        if (!bluetoothEnabled)
             return "Disabled";
         if (activeDevice)
             return activeDevice.name;
@@ -42,7 +42,7 @@ StyledRect {
         anchors.leftMargin: Metrics.margin("small")
 
         color: {
-            if (!enabled)
+            if (!bluetoothEnabled)
                 return Appearance.m3colors.m3surfaceContainerHigh;
             if (activeDevice)
                 return Appearance.m3colors.m3primaryContainer;

@@ -26,7 +26,7 @@ ContentMenu {
             StyledSwitch {
                 id: powerSwitch
                 checked: Network.wifiEnabled
-                onToggled: Network.enableWifi(checked)
+                onToggled: checked => Network.enableWifi(checked)
             }
         }
 
@@ -57,7 +57,7 @@ ContentMenu {
 
             StyledSwitch {
                 checked: Network.scanning
-                onToggled: {
+                onToggled: checked => {
                     if (checked)
                         Network.rescan()
                 }

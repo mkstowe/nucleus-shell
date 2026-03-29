@@ -27,7 +27,7 @@ ContentMenu {
             StyledSwitch {
                 id: powerSwitch
                 checked: Bluetooth.defaultAdapter?.enabled
-                onToggled: Bluetooth.defaultAdapter.enabled = checked
+                onToggled: checked => Bluetooth.defaultAdapter.enabled = checked
             }
         }
 
@@ -56,7 +56,7 @@ ContentMenu {
 
             StyledSwitch {
                 checked: Bluetooth.defaultAdapter?.discoverable
-                onToggled: Bluetooth.defaultAdapter.discoverable = checked
+                onToggled: checked => Bluetooth.defaultAdapter.discoverable = checked
             }
         }
 
@@ -85,7 +85,7 @@ ContentMenu {
 
             StyledSwitch {
                 checked: Bluetooth.defaultAdapter?.discovering
-                onToggled: Bluetooth.defaultAdapter.discovering = checked
+                onToggled: checked => Bluetooth.defaultAdapter.discovering = checked
             }
         }
     }
