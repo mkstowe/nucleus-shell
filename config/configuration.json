@@ -7,7 +7,7 @@
         "background": {
             "defaultPath": "/home/mkstowe/.config/nucleus-shell/quickshell/nucleus-shell/defaults/default.jpg",
             "enabled": true,
-            "fillMode": "cover",
+            "fillMode": "tile",
             "parallax": {
                 "enableSidebarLeft": false,
                 "enableSidebarRight": false,
@@ -97,7 +97,7 @@
     "monitors": {
         "DP-1": {
             "bar": {
-                "density": 50,
+                "density": 65,
                 "enabled": true,
                 "floating": false,
                 "gothCorners": true,
@@ -107,7 +107,7 @@
                     "clock": {
                         "enabled": true
                     },
-                    "height": 34,
+                    "height": 40,
                     "mediaPlayer": {
                         "enabled": true
                     },
@@ -133,11 +133,11 @@
                 "position": "top",
                 "radius": 23
             },
-            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tboesrruypyz.webp"
+            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tile_x.png"
         },
         "HDMI-A-1": {
             "bar": {
-                "density": 50,
+                "density": 65,
                 "enabled": true,
                 "floating": false,
                 "gothCorners": true,
@@ -147,7 +147,7 @@
                     "clock": {
                         "enabled": false
                     },
-                    "height": 34,
+                    "height": 40,
                     "mediaPlayer": {
                         "enabled": false
                     },

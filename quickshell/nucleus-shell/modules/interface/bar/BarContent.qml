@@ -15,7 +15,7 @@ Item {
         id: hCenterRow
         visible: isHorizontal
         anchors.centerIn: parent
-        spacing: Metrics.spacing(4)
+        spacing: Metrics.spacing(16)
 
         WorkspaceModule {
             displayName: root.displayName
@@ -28,8 +28,8 @@ Item {
         visible: isHorizontal
         anchors.left: parent.left
         anchors.verticalCenter: parent.verticalCenter
-        spacing: Metrics.spacing(4)
-        anchors.leftMargin: ConfigResolver.bar(displayName).density * 0.3
+        spacing: Metrics.spacing(16)
+        anchors.leftMargin: ConfigResolver.bar(displayName).density * 0.35
 
         ToggleModule {
             visible: ConfigResolver.bar(root.displayName).modules.sidebars.leftSidebarToggleEnabled
@@ -58,8 +58,8 @@ Item {
         visible: isHorizontal
         anchors.right: parent.right
         anchors.verticalCenter: parent.verticalCenter
-        spacing: Metrics.spacing(4)
-        anchors.rightMargin: ConfigResolver.bar(displayName).density * 0.3
+        spacing: Metrics.spacing(16)
+        anchors.rightMargin: ConfigResolver.bar(displayName).density * 0.35
 
         SystemUsageModule {
             displayName: root.displayName
