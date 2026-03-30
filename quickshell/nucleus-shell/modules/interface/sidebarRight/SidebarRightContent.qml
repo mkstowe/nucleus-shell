@@ -72,7 +72,7 @@ Item {
 
                     MaterialSymbolButton {
                         id: screenshotButton
-                        icon: "edit"
+                        icon: "photo_camera"
                         anchors.centerIn: parent
                         iconSize: Metrics.iconSize("hugeass") + 2
                         tooltipText: "Take a screenshot"
@@ -81,6 +81,31 @@ Item {
                         onButtonClicked: {
                             Globals.states.screenCaptureOpen = true;
                             Globals.visiblility.sidebarRight = false;
+                        }
+                    }
+                }
+
+                StyledRect {
+                    id: colorpickerbtncontainer
+                    color: "transparent"
+                    radius: Metrics.radius("large")
+                    implicitHeight: colorPickerButton.height + Metrics.margin("tiny")
+                    implicitWidth: colorPickerButton.width + Metrics.margin("small")
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                    Layout.topMargin: Metrics.margin(10)
+                    Layout.leftMargin: Metrics.margin(15)
+
+                    MaterialSymbolButton {
+                        id: colorPickerButton
+                        icon: "colorize"
+                        anchors.centerIn: parent
+                        iconSize: Metrics.iconSize("hugeass") + 2
+                        tooltipText: "Pick a color"
+                        tooltipOffsetY: Metrics.margin(64)
+
+                        onButtonClicked: {
+                            Globals.visiblility.sidebarRight = false;
+                            Quickshell.execDetached(["hyprpicker", "-a"]);
                         }
                     }
                 }
@@ -155,36 +180,6 @@ Item {
             }
         }
 
-        Rectangle {
-            Layout.fillWidth: true
-            height: 1
-            color: Appearance.m3colors.m3outlineVariant
-            radius: Metrics.radius(1)
-        }
-
-        GridLayout {
-            id: middleGrid
-            Layout.fillWidth: true
-            columns: 1
-            columnSpacing: Metrics.spacing(8)
-            rowSpacing: Metrics.spacing(8)
-            Layout.preferredWidth: parent.width
-
-            RowLayout {
-                NetworkToggle {
-                    Layout.fillWidth: true
-                    Layout.preferredHeight: 80
-                }
-            }
-
-            RowLayout {
-                BluetoothToggle {
-                    Layout.preferredWidth: 220
-                    Layout.preferredHeight: 80
-                }
-            }
-        }
-
         ColumnLayout {
             spacing: Metrics.margin("small")
             Layout.fillWidth: true
@@ -198,8 +193,8 @@ Item {
                 Layout.bottomMargin: Metrics.margin(5)
             }
 
-            NotifModal {
-                Layout.preferredHeight: (Config.runtime.bar.position === "left" || Config.runtime.bar.position === "right") ? 480 : 470
+            SidebarPanelManager {
+                Layout.preferredHeight: (Config.runtime.bar.position === "left" || Config.runtime.bar.position === "right") ? 620 : 560
             }
         }
     }
