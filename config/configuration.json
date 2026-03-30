@@ -138,7 +138,7 @@
                 "position": "top",
                 "radius": 23
             },
-            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tile_x.png"
+            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/hideout.svg"
         },
         "HDMI-A-1": {
             "bar": {
@@ -184,7 +184,7 @@
                 "position": "top",
                 "radius": 23
             },
-            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/tile_x.png"
+            "wallpaper": "file:///home/mkstowe/Pictures/wallpapers/hideout.svg"
         }
     },
     "notifications": {
