@@ -38,8 +38,8 @@ Item {
             iconColor: Appearance.m3colors.m3primary
             toggle: Globals.visiblility.sidebarLeft
 
-            onToggled: function () {
-                Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft;
+            onToggled: function (value) {
+                Globals.visiblility.sidebarLeft = value;
             }
         }
 
@@ -78,8 +78,8 @@ Item {
             iconColor: Appearance.m3colors.m3primary
             toggle: Globals.visiblility.sidebarRight
 
-            onToggled: function () {
-                Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight;
+            onToggled: function (value) {
+                Globals.visiblility.sidebarRight = value;
             }
         }
     }
@@ -107,8 +107,8 @@ Item {
                 toggle: Globals.visiblility.sidebarLeft
                 rotation: 270
 
-                onToggled: function () {
-                    Globals.visiblility.sidebarLeft = !Globals.visiblility.sidebarLeft;
+                onToggled: function (value) {
+                    Globals.visiblility.sidebarLeft = value;
                 }
             }
 
@@ -167,8 +167,8 @@ Item {
                 toggle: Globals.visiblility.sidebarRight
                 rotation: 270
 
-                onToggled: function () {
-                    Globals.visiblility.sidebarRight = !Globals.visiblility.sidebarRight;
+                onToggled: function (value) {
+                    Globals.visiblility.sidebarRight = value;
                 }
             }
         }
