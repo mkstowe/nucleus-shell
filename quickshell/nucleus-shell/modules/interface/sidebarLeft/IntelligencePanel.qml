@@ -237,6 +237,8 @@ Item {
                 StyledButton {
                     icon: "add"
                     Layout.preferredWidth: 40
+                    tooltipText: "New chat"
+                    useAttachedTooltip: true
                     onClicked: {
                         let name = "new-chat-" + chatListModel.count;
                         let path = FileUtils.trimFileProtocol(Directories.config) + "/zenith/chats/" + name + ".txt";
@@ -256,6 +258,8 @@ Item {
                     icon: "edit"
                     Layout.preferredWidth: 40
                     enabled: chatSelector.currentIndex >= 0
+                    tooltipText: "Rename chat"
+                    useAttachedTooltip: true
                     onClicked: renameDialog.open()
                 }
 
@@ -263,6 +267,8 @@ Item {
                     icon: "delete"
                     Layout.preferredWidth: 40
                     enabled: chatSelector.currentIndex >= 0 && chatSelector.currentText !== "default"
+                    tooltipText: "Delete chat"
+                    useAttachedTooltip: true
                     onClicked: {
                         let name = chatSelector.currentText;
                         let path = FileUtils.trimFileProtocol(Directories.config) + "/zenith/chats/" + name + ".txt";
@@ -278,8 +284,10 @@ Item {
                 StyledButton {
                     icon: "fullscreen"
                     Layout.preferredWidth: 40
+                    tooltipText: "Open window"
+                    useAttachedTooltip: true
                     onClicked: {
-                        Quickshell.execDetached(["nucleus", "ipc", "call", "intelligence", "openWindow"]);
+                        Globals.states.intelligenceWindowOpen = true;
                         Globals.visiblility.sidebarLeft = false;
                     }
                 }
@@ -310,6 +318,8 @@ Item {
                         Layout.preferredWidth: 22
                         Layout.preferredHeight: 20
                         font.pixelSize: Metrics.fontSize(10)
+                        tooltipText: "Clear prompt"
+                        useAttachedTooltip: true
                         onClicked: sendCommand("/prompt clear")
                     }
                 }

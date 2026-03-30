@@ -20,6 +20,9 @@ Control {
     property bool checked: true
     property bool secondary: false
     property string tooltipText: ""
+    property bool useAttachedTooltip: false
+    property real tooltipOffsetX: 0
+    property real tooltipOffsetY: 0
     property bool usePrimary: secondary ? false : checked
     property color base_bg: usePrimary ? Appearance.m3colors.m3primary : Appearance.m3colors.m3secondaryContainer
     property color base_fg: usePrimary ? Appearance.m3colors.m3onPrimary : Appearance.m3colors.m3onSecondaryContainer
@@ -58,15 +61,17 @@ Control {
     HoverHandler {
         id: hover
 
-        enabled: root.tooltipText !== ""
+        enabled: root.tooltipText !== "" && !root.useAttachedTooltip
     }
 
     LazyLoader {
-        active: root.tooltipText !== ""
+        active: root.tooltipText !== "" && !root.useAttachedTooltip
 
         StyledPopout {
             hoverTarget: hover
             hoverDelay: Metrics.chronoDuration(500)
+            offsetX: root.tooltipOffsetX
+            offsetY: root.tooltipOffsetY
 
             Component {
                 StyledText {
@@ -78,6 +83,10 @@ Control {
         }
 
     }
+
+    ToolTip.visible: root.useAttachedTooltip && mouse_area.containsMouse && root.tooltipText !== ""
+    ToolTip.text: root.tooltipText
+    ToolTip.delay: Metrics.chronoDuration(500)
 
     contentItem: Item {
         anchors.fill: parent
