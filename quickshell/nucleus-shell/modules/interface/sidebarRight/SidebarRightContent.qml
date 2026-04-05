@@ -18,6 +18,56 @@ Item {
     anchors.rightMargin: Metrics.margin("normal")
     anchors.topMargin: Metrics.margin("large")
     anchors.bottomMargin: Metrics.margin("large")
+    property bool gammastepRunning: false
+    property bool gammastepTemporarilyDisabled: false
+
+    function refreshGammastepState() {
+        gammastepStateProcess.running = true;
+    }
+
+    function toggleGammastep() {
+        if (root.gammastepRunning) {
+            Quickshell.execDetached(["pkill", "-USR1", "-x", "gammastep"]);
+            root.gammastepTemporarilyDisabled = !root.gammastepTemporarilyDisabled;
+        } else {
+            Quickshell.execDetached(["gammastep"]);
+            root.gammastepTemporarilyDisabled = false;
+        }
+
+        gammastepRefreshTimer.restart();
+    }
+
+    Component.onCompleted: refreshGammastepState()
+
+    Timer {
+        id: gammastepPollTimer
+        interval: 5000
+        repeat: true
+        running: true
+        onTriggered: root.refreshGammastepState()
+    }
+
+    Timer {
+        id: gammastepRefreshTimer
+        interval: 350
+        repeat: false
+        onTriggered: root.refreshGammastepState()
+    }
+
+    Process {
+        id: gammastepStateProcess
+        running: false
+        command: ["sh", "-c", "if pgrep -x gammastep >/dev/null 2>&1; then printf 'enabled\\n'; else printf 'disabled\\n'; fi"]
+
+        stdout: StdioCollector {
+            onStreamFinished: {
+                root.gammastepRunning = text.trim() === "enabled";
+
+                if (!root.gammastepRunning)
+                    root.gammastepTemporarilyDisabled = false;
+            }
+        }
+    }
 
     ColumnLayout {
         id: mainLayout
@@ -59,6 +109,29 @@ Item {
                 spacing: Metrics.spacing(6)
                 Layout.leftMargin: Metrics.margin(25)
                 Layout.alignment: Qt.AlignVCenter
+
+                StyledRect {
+                    id: gammastepbtncontainer
+                    color: "transparent"
+                    radius: Metrics.radius("large")
+                    implicitHeight: gammastepButton.height + Metrics.margin("tiny")
+                    implicitWidth: gammastepButton.width + Metrics.margin("small")
+                    Layout.alignment: Qt.AlignRight | Qt.AlignTop
+                    Layout.topMargin: Metrics.margin(10)
+                    Layout.leftMargin: Metrics.margin(15)
+
+                    MaterialSymbolButton {
+                        id: gammastepButton
+                        icon: "tonality"
+                        fill: root.gammastepRunning && !root.gammastepTemporarilyDisabled ? 1 : 0
+                        color: root.gammastepRunning && !root.gammastepTemporarilyDisabled ? Appearance.m3colors.m3primary : Appearance.colors.colOnLayer0
+                        anchors.centerIn: parent
+                        iconSize: Metrics.iconSize("hugeass") + 2
+                        tooltipText: root.gammastepRunning && !root.gammastepTemporarilyDisabled ? "Disable Gammastep" : "Enable Gammastep"
+                        tooltipOffsetY: Metrics.margin(64)
+                        onButtonClicked: root.toggleGammastep()
+                    }
+                }
 
                 StyledRect {
                     id: screenshotbtncontainer
